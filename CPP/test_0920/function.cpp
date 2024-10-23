@@ -188,7 +188,12 @@ uint8_t Comfunctions::decimalToGray(uint8_t num)
 string Comfunctions::extractLastSixBitsToString(uint8_t value, int bitnum)
 {
     string binaryString;
-    if (bitnum == 2)
+    if (bitnum == 1)
+    {
+        value = value & 0b1;
+        binaryString = bitset<1>(value).to_string();
+    }
+    else if (bitnum == 2)
     {
         value = value & 0b11;
         binaryString = bitset<2>(value).to_string();

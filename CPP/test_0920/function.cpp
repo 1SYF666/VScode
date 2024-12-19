@@ -85,7 +85,47 @@ int Comfunctions::ReadFile(const string &path, float *outputdata, int &numFloats
 
     memcpy(outputdata, buffer, fileSize);
 
+    delete[] buffer;
+
     return 0;
+}
+
+/*
+    在 C++ 中读取 .txt 文件时，文件内容通常是以字符形式存储的，
+    因此直接读取文本文件中的 0 和 1 时，会默认读取到字符 '0' 和 '1'。
+    这是因为文本文件是以字符流形式存储的。
+*/
+int Comfunctions::ReadFile(const string &path, char *outputdata, int &numchars)
+{
+    // 打开文件，使用二进制模式读取
+    ifstream file(path, ios::binary);
+
+    // 检查文件是否成功打开
+    if (!file.is_open())
+    {
+        cerr << "无法打开文件！" << endl;
+        return -1;
+    }
+
+    // 移动文件指针到文件末尾以计算文件的大小
+    file.seekg(0, ios::end);
+    size_t fileSize = file.tellg(); // 获取文件的大小
+    file.seekg(0, ios::beg);        // 将文件指针移回开头
+
+    // 分配缓冲区来存储文件内容
+    char *buffer = new char[fileSize];
+
+    // 读取文件内容到缓冲区中
+    file.read(buffer, fileSize);
+
+    // 关闭文件
+    file.close();
+
+    numchars = fileSize;
+    memcpy(outputdata, buffer, fileSize);
+
+    return 0;
+
 }
 
 int Comfunctions::ReadFile(const string &path, complex *outputdata, int &floatnum, int &complexnum)
@@ -123,6 +163,8 @@ int Comfunctions::ReadFile(const string &path, complex *outputdata, int &floatnu
 
     memcpy(outputdata, buffer, fileSize);
 
+    delete[] buffer;
+
     return 0;
 }
 
@@ -133,7 +175,7 @@ int Comfunctions::ReadFile(const string &path, complex *outputdata, int &floatnu
 int Comfunctions::WriteFile(const string &path, float *data, int sizenum)
 {
     // 以二进制模式打开文件
-    ofstream file(path, ios::binary);
+    ofstream file(path, ios::binary|ios::app);
 
     if (!file.is_open())
     {
@@ -178,6 +220,19 @@ uint8_t Comfunctions::decimalToGray(uint8_t num)
 {
     return num ^ (num >> 1); // num >> 1右移后左边补零，^为按位异或操作
 }
+
+/*
+    input: num整数(十进制)，类型uint8_t
+    return value: num-->格雷译码-->格雷译码码对应整数(十进制)
+*/
+uint8_t Comfunctions::grayToDecimal(uint8_t gray) {
+    uint8_t binary = gray;  // 初始化解码结果
+    while (gray >>= 1) {
+        binary ^= gray;  // 逐位异或，解码格雷码
+    }
+    return binary;
+}
+
 
 /*
     input:
@@ -289,4 +344,63 @@ void Comfunctions::write_bin(const string &filepath, uint8_t *input, int inum, i
     ofstream outfile(filepath, ios::out | ios::binary);
     outfile.write(chars, charnum);
     outfile.close();
+    delete[] chars;
 }
+
+/*
+    function: 读取bin文件，并将读取内容存放到char类型数组
+    output:
+        parameter1: output数组(十进制)，类型uint8_t*,
+        parameter2: inum为output数组长度
+    return value: 
+                 1 ---- 读取成功 
+                 -1 --- 读取失败 
+*/
+int Comfunctions::read_bin(const string &filepath, uint8_t *output, int* inum)
+{
+
+    // 打开二进制文件
+    ifstream file(filepath, ios::binary);
+    if (!file) {
+        cerr << "无法打开文件 " << filepath << endl;
+        return -1;
+    }
+
+    // 获取文件大小
+    file.seekg(0, ios::end);
+    streamsize fileSize = file.tellg();
+    file.seekg(0, ios::beg);
+
+    *inum = fileSize;
+
+    // 动态分配char数组来存储文件内容
+    char* buffer = new char[fileSize];
+
+    // 读取文件内容
+    if (!file.read(buffer, fileSize)) 
+    {
+         cerr << "无法读取bin文件 " << filepath << endl;
+        return -1;
+    }
+
+    memcpy(output,buffer,sizeof(char)*fileSize);
+
+    // 释放动态分配的内存
+    delete[] buffer;
+
+    // 关闭文件
+    file.close();
+
+    return 1;
+}
+
+
+/*
+    function: 将txt文件中的bin
+    input:
+        parameter1: input数组(十进制)，类型uint8_t*,
+        parameter2: inum为input数组长度
+        parameter3: bitnum为value转化为二进制的最长位数
+    return value:  value转化为二进制，类型 string
+*/
+

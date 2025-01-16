@@ -7,7 +7,7 @@ class ParameterEst
 public:
 	ParameterEst();
 	//~ParameterEst();
-	virtual void estimation(float* real, float* imag, int size, int nfft, int fs)
+	virtual void estimation(float* real, float* imag, int size, int nfft, int fs, int n = 2)
 	{
 		printf("ERROR [generate time complex]:Override this virtual class");
 	};
@@ -27,7 +27,7 @@ class PmbpEst :public ParameterEst
 public:
 	PmbpEst();
 	//~PmbpEst();
-	void estimation(float* real, float* imag, int size, int nfft, int fs);
+	void estimation(float* real, float* imag, int size,  int nfft, int fs, int n=2);
 
 
 private:
@@ -37,7 +37,6 @@ private:
 	int nthreads;
 	int newsize;
 };
-
 
 
 

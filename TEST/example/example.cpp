@@ -18,7 +18,7 @@ PmbpEst::PmbpEst()
 }
 
 
-void PmbpEst::estimation(float* real, float* imag, int size, int nfft, int fs)
+void PmbpEst::estimation(float* real, float* imag, int size,int nfft, int fs, int n)
 {
 	Comfunctions h;
 	float valuetemp[10] = { 0 };
@@ -72,19 +72,32 @@ void PmbpEst::estimation(float* real, float* imag, int size, int nfft, int fs)
 	path = "C:\\Users\\PC/Desktop\\cwt\\downim.dat";
 	h.WriteFile(path, imag, size);
 
+
 	// 二倍频fft
 	vector<float> realPart(size);
 	vector<float> imagPart(size);
-	
-	// 计算实部平方结果: real^2 - imag^2
-	ippsSqr_32f(real, realPart.data(),  size); // 实部平方 real^2
-	ippsSqr_32f(imag, imagPart.data(),  size); // 虚部平方 imag^2
-	ippsSub_32f_I(imagPart.data(), realPart.data(), size); // 实部结果 real^2 - imag^2
 
-	// 计算虚部结果: 2 * real * imag
-	ippsMul_32f(real, imag, imagPart.data(), size); // real * imag
-	ippsMulC_32f_I(2.0f, imagPart.data(), size); // 2 * real * imag
-	
+	// 临时变量用于存储中间结果
+	vector<float> tempReal(size);
+	vector<float> tempImag(size);
+	memcpy(tempReal.data(), real, sizeof(float) * size);
+	memcpy(tempImag.data(), imag, sizeof(float) * size);
+	for (int i = 0; i < n/2; i++)
+	{
+		// 计算实部平方结果: real^2 - imag^2
+		ippsSqr_32f(tempReal.data(), realPart.data(), size); // 实部平方 real^2
+		ippsSqr_32f(tempImag.data(), imagPart.data(), size); // 虚部平方 imag^2
+		ippsSub_32f_I(imagPart.data(), realPart.data(), size); // 实部结果 real^2 - imag^2
+
+		// 计算虚部结果: 2 * real * imag
+		ippsMul_32f(tempReal.data(), tempImag.data(), imagPart.data(), size); // real * imag
+		ippsMulC_32f_I(2.0f, imagPart.data(), size); // 2 * real * imag
+		
+		tempReal = realPart;
+		tempImag = imagPart;
+
+	}
+
 	memcpy(fftre.data(), realPart.data(), sizeof(float) * nfft);
 	memcpy(fftim.data(), imagPart.data(), sizeof(float) * nfft);
 
@@ -100,7 +113,6 @@ void PmbpEst::estimation(float* real, float* imag, int size, int nfft, int fs)
 	ippsMaxIndx_32f(fftout.data(), nfft, valuetemp, indextemp);
 	valuetemp[1] = 0.5*(indextemp[0] - nfft / 2) * ((float)fs / (float)nfft);  // 负载波
 
-	
 	vector<complex<float>>compdata(size);
 
 	interfaceipp->LhtCopyRealAndimag2Complex((Ipp32fc*)compdata.data(), real, imag, size);

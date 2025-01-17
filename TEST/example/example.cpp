@@ -60,7 +60,8 @@ void PmbpEst::estimation(float* real, float* imag, int size,int nfft, int fs, in
 	h.WriteFile(path, fftout.data(), size);
 
 	// find max value and corresponding index 
-	ippsMaxIndx_32f(fftout.data(), nfft, valuetemp, indextemp);
+	//ippsMaxIndx_32f(fftout.data(), nfft, valuetemp, indextemp);
+	interfaceipp->LhtfindMaxindexFloat(fftout.data(), nfft, valuetemp, indextemp);
 
 	valuetemp[0] = (indextemp[0] - nfft / 2) * ((float)fs / (float)nfft);  // 主载波
 
@@ -78,25 +79,27 @@ void PmbpEst::estimation(float* real, float* imag, int size,int nfft, int fs, in
 	vector<float> imagPart(size);
 
 	// 临时变量用于存储中间结果
-	vector<float> tempReal(size);
-	vector<float> tempImag(size);
-	memcpy(tempReal.data(), real, sizeof(float) * size);
-	memcpy(tempImag.data(), imag, sizeof(float) * size);
-	for (int i = 0; i < n/2; i++)
-	{
-		// 计算实部平方结果: real^2 - imag^2
-		ippsSqr_32f(tempReal.data(), realPart.data(), size); // 实部平方 real^2
-		ippsSqr_32f(tempImag.data(), imagPart.data(), size); // 虚部平方 imag^2
-		ippsSub_32f_I(imagPart.data(), realPart.data(), size); // 实部结果 real^2 - imag^2
+	//vector<float> tempReal(size);
+	//vector<float> tempImag(size);
+	//memcpy(tempReal.data(), real, sizeof(float) * size);
+	//memcpy(tempImag.data(), imag, sizeof(float) * size);
+	//for (int i = 0; i < n/2; i++)
+	//{
+	//	// 计算实部平方结果: real^2 - imag^2
+	//	ippsSqr_32f(tempReal.data(), realPart.data(), size); // 实部平方 real^2
+	//	ippsSqr_32f(tempImag.data(), imagPart.data(), size); // 虚部平方 imag^2
+	//	ippsSub_32f_I(imagPart.data(), realPart.data(), size); // 实部结果 real^2 - imag^2
 
-		// 计算虚部结果: 2 * real * imag
-		ippsMul_32f(tempReal.data(), tempImag.data(), imagPart.data(), size); // real * imag
-		ippsMulC_32f_I(2.0f, imagPart.data(), size); // 2 * real * imag
-		
-		tempReal = realPart;
-		tempImag = imagPart;
+	//	// 计算虚部结果: 2 * real * imag
+	//	ippsMul_32f(tempReal.data(), tempImag.data(), imagPart.data(), size); // real * imag
+	//	ippsMulC_32f_I(2.0f, imagPart.data(), size); // 2 * real * imag
+	//	
+	//	tempReal = realPart;
+	//	tempImag = imagPart;
 
-	}
+	//}
+
+	interfaceipp->LhtCalculateEvenpowerFloat2(real, imag, size, realPart.data(), imagPart.data());
 
 	memcpy(fftre.data(), realPart.data(), sizeof(float) * nfft);
 	memcpy(fftim.data(), imagPart.data(), sizeof(float) * nfft);
@@ -110,7 +113,9 @@ void PmbpEst::estimation(float* real, float* imag, int size,int nfft, int fs, in
 	path = "C:\\Users\\PC/Desktop\\cwt\\fftout2.dat";
 	h.WriteFile(path, fftout.data(), size);
 
-	ippsMaxIndx_32f(fftout.data(), nfft, valuetemp, indextemp);
+	//ippsMaxIndx_32f(fftout.data(), nfft, valuetemp, indextemp);
+	interfaceipp->LhtfindMaxindexFloat(fftout.data(), nfft, valuetemp, indextemp);
+
 	valuetemp[1] = 0.5*(indextemp[0] - nfft / 2) * ((float)fs / (float)nfft);  // 负载波
 
 	vector<complex<float>>compdata(size);
@@ -141,10 +146,13 @@ void PmbpEst::estimation(float* real, float* imag, int size,int nfft, int fs, in
 	newsize = nfft;
 	vector<complex<float>> waveletcoefficients(newsize);
 	vector<float> fcwtout(newsize);
-	// substrct corresponding wavelet coefficients
-	ippsSubC_32f(freq.data(), valuetemp[1], diff.data(), fn);
-	ippsAbs_32f(diff.data(), absdiff.data(), fn);
-	ippsMinIndx_32f(absdiff.data(), fn, valuetemp + 2, indextemp);
+	//// substrct corresponding wavelet coefficients
+	//ippsSubC_32f(freq.data(), valuetemp[1], diff.data(), fn);
+	//ippsAbs_32f(diff.data(), absdiff.data(), fn);
+	//ippsMinIndx_32f(absdiff.data(), fn, valuetemp + 2, indextemp);
+	interfaceipp->LhtSubCFloat(freq.data(), valuetemp[1], fn,diff.data());
+	interfaceipp->LhtAbsFloat(diff.data(), fn, absdiff.data());
+	interfaceipp->LhtfindMininexFloat(absdiff.data(), fn, valuetemp + 2, indextemp);
 
 	copy(tfm.begin() + indextemp[0] * newsize, tfm.begin() + indextemp[0] * newsize + newsize, waveletcoefficients.begin());
 
@@ -157,8 +165,10 @@ void PmbpEst::estimation(float* real, float* imag, int size,int nfft, int fs, in
 	// 计算符号速率
 	float meanvalue = 0;
 	interfaceipp->LhtMeanFloat(fcwtout.data(), newsize, &meanvalue);   // 计算均值
-	ippsSubC_32f(fcwtout.data(), meanvalue, fcwtout.data(), newsize);  // 数组中每个元素减去常数
-	ippsAbs_32f(fcwtout.data(), fcwtout.data(), newsize);			   // 对结果取绝对值
+	//ippsSubC_32f(fcwtout.data(), meanvalue, fcwtout.data(), newsize);  // 数组中每个元素减去常数
+	//ippsAbs_32f(fcwtout.data(), fcwtout.data(), newsize);			   // 对结果取绝对值
+	interfaceipp->LhtSubCFloat(fcwtout.data(), meanvalue, newsize, fcwtout.data());
+	interfaceipp->LhtAbsFloat(fcwtout.data(), newsize, fcwtout.data());
 
 	path = "C:\\Users\\PC/Desktop\\cwt\\fcwtoutabs.dat";
 	h.WriteFile(path, (float*)(fcwtout.data()), newsize);

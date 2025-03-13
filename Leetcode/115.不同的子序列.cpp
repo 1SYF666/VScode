@@ -8,20 +8,33 @@
 class Solution {
 public:
     int numDistinct(string s, string t) {
-        if(t.size() > s.size()) return 0;
-        if(t.size()== s.size()) return s==t;
-        vector < long> dp(t.size()+1,0);  
-        dp[0] = 1;
-        for(int i = 0; i < s.size(); ++i){
-          for(int j =static_cast(t.size())-1; j>=0; --j){
-            //dp[j] means number of subsequence that has matched j char in t, need to compare with t[j]
-            if(t[j]==s[i]){
-              dp[j+1] += dp[j];//use this character, so dp[j+1] should be modified
-              //at the same time keep dp[j] unchanged, which means skip this character
-            }
-          }  
+        const int MOD = 1000000007;
+        int m = s.length(),n = t.length();
+        vector<vector<long long>> dp(m+1,vector<long long>(n+1,0));
+        
+        // 初始化：t为空时，方案数为1
+        for (int j = 0; j <= m; j++)
+        {
+            /* code */
+            dp[j][0] = 1;
         }
-        return dp.back();
+        // 填充dp的数组
+        for (int i = 1; i <= m; i++)
+        {
+            for (int j = 1; j <= n; j++)
+            {
+                if (s[i-1] == t[j-1])
+                {
+                    dp[i][j] = (dp[i-1][j-1] + dp[i-1][j])%MOD;
+                }
+                else
+                {
+                    dp[i][j] = dp[i-1][j]%MOD;
+                }
+            }
+            
+        }
+        return dp[m][n];
         
     }
 };

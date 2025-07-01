@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 #include <iostream>
 using namespace std;
 
@@ -72,7 +73,7 @@ int DynamicProgramming_exp1()
         {
             if (j < weight[i])
             {
-                dp[i][j] = dp[i-1][j];
+                dp[i][j] = dp[i - 1][j];
             }
             else
             {
@@ -93,9 +94,62 @@ int TestExample1()
     return 0;
 }
 
+/*
+时间: 20250701 14:54
+416. 分割等和子集 ---- 力扣题目链接(opens new window)
+题目难易：中等
+给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+注意: 每个数组中的元素不会超过 100 数组的大小不会超过 200
+*/
+
+// 回溯法（暴力解决）
+
+bool backtracking2(int index, int currentsum, int maxvalue, const vector<int> &nums)
+{
+    // 终止条件
+    if (currentsum == maxvalue)
+        return true;
+    if (index >= nums.size() || currentsum > maxvalue)
+    {
+        return false;
+    }
+
+    // 选择
+    if (currentsum + nums[index] <= maxvalue)
+    {
+        if(backtracking2(index + 1, currentsum + nums[index], maxvalue, nums))
+            return true;
+    }
+
+    // 不选择
+    return backtracking2(index+1,currentsum,maxvalue,nums);
+}
+
+bool example2()
+{
+    int sum = 0;
+    // 物品:下标索引0 1 2 3
+    vector<int> nums = {0, 1, 2, 3};
+    for (int i = 0; i < nums.size(); i++)
+    {
+        sum += nums[i];
+    }
+    // 奇数直接false
+    if (sum % 2)
+        return false;
+    int mid = sum / 2;
+    return backtracking2(0, 0, mid, nums);
+}
 
 int main()
 {
-    
+    if (example2())
+    {
+        cout << "true" << endl;
+    }
+    else
+    {
+        cout << "false" << endl;
+    }
     return 0;
 }

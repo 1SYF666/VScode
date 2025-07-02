@@ -104,11 +104,14 @@ int TestExample1()
 
 // 回溯法（暴力解决）
 
-bool backtracking2(int index, int currentsum, int maxvalue, const vector<int> &nums)
+bool backtracking2(int index, int currentsum, int maxvalue, const vector<int> &nums, vector<int> &result)
 {
     // 终止条件
     if (currentsum == maxvalue)
+    {
         return true;
+    }
+
     if (index >= nums.size() || currentsum > maxvalue)
     {
         return false;
@@ -117,19 +120,23 @@ bool backtracking2(int index, int currentsum, int maxvalue, const vector<int> &n
     // 选择
     if (currentsum + nums[index] <= maxvalue)
     {
-        if(backtracking2(index + 1, currentsum + nums[index], maxvalue, nums))
+        result.push_back(nums[index]);
+        if (backtracking2(index + 1, currentsum + nums[index], maxvalue, nums, result))
             return true;
+
+        // 回溯
+        result.pop_back();
     }
 
     // 不选择
-    return backtracking2(index+1,currentsum,maxvalue,nums);
+    return backtracking2(index + 1, currentsum, maxvalue, nums, result);
 }
 
-bool example2()
+bool example2(vector<int> &result1, vector<int> &result2)
 {
     int sum = 0;
     // 物品:下标索引0 1 2 3
-    vector<int> nums = {0, 1, 2, 3};
+    vector<int> nums = {1, 5, 11, 5};
     for (int i = 0; i < nums.size(); i++)
     {
         sum += nums[i];
@@ -138,18 +145,96 @@ bool example2()
     if (sum % 2)
         return false;
     int mid = sum / 2;
-    return backtracking2(0, 0, mid, nums);
+
+    bool flag = backtracking2(0, 0, mid, nums, result1);
+
+    if (flag)
+    {
+        for (int i = 0; i < nums.size(); i++)
+        {
+            int flag1 = 1;
+            for (int j = 0; j < result1.size(); j++)
+            {
+                if (nums[i] == result1[j])
+                    flag1 = 0;
+            }
+            if (flag1)
+                result2.push_back(nums[i]);
+        }
+    }
+
+    return flag;
+}
+
+// 动态规划
+bool DynamicProgramming_exp2()
+{
+    int sum = 0;
+    // 物品:下标索引0 1 2 3
+    vector<int> nums = {1, 2, 3, 5};
+    for (int i = 0; i < nums.size(); i++)
+    {
+        sum += nums[i];
+    }
+    // 奇数直接false
+    if (sum % 2)
+        return false;
+    int mid = sum / 2;
+
+    vector<int> dp(mid + 1, 0);
+    // 开始 01背包
+    for (int i = 0; i < nums.size(); i++)
+    {
+        for (int j = mid; j >= nums[i]; j--)
+        { // 每一个元素一定是不可重复放入，所以从大到小遍历
+            dp[j] = max(dp[j], dp[j - nums[i]] + nums[i]);
+        }
+    }
+    if (dp[mid] == mid)
+        return true;
+    else
+        return false;
+}
+
+void TestExample2()
+{
+    // vector<int> result1;
+    // vector<int> result2;
+    // if (example2(result1, result2))
+    // {
+    //     cout << "true" << endl;
+    //     cout << "first: " << "[";
+    //     if (result1.size() > 1)
+    //     {
+    //         for (int i = 0; i < result1.size() - 1; i++)
+    //         {
+    //             cout << result1[i] << ",";
+    //         }
+    //     }
+    //     cout << result1[result1.size() - 1] << "]" << endl;
+
+    //     cout << "second: " << "[";
+    //     if (result2.size() > 1)
+    //     {
+    //         for (int i = 0; i < result2.size() - 1; i++)
+    //         {
+    //             cout << result2[i] << ",";
+    //         }
+    //     }
+    //     cout << result2[result2.size() - 1] << "]" << endl;
+    // }
+    // else
+    // {
+    //     cout << "false" << endl;
+    // }
+    if(DynamicProgramming_exp2())
+        cout<<"true"<<endl;
+    else
+        cout<<"false"<<endl;
 }
 
 int main()
 {
-    if (example2())
-    {
-        cout << "true" << endl;
-    }
-    else
-    {
-        cout << "false" << endl;
-    }
+    TestExample2();
     return 0;
 }

@@ -234,9 +234,3 @@ void TestExample2()
     else
         cout<<"false"<<endl;
 }
-
-int main()
-{
-    TestExample2();
-    return 0;
-}

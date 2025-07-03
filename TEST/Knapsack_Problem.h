@@ -39,16 +39,6 @@ void backtracking(int index, int currentWeight, int currentValue, int maxweight,
     }
 }
 
-void example1(int &finalvalue)
-{
-    // 物品:下标索引0 1 2
-    int maxweight = 4;
-    vector<int> weight = {1, 3, 4};
-    vector<int> value = {15, 20, 30};
-    int maxValue = 0;
-    backtracking(0, 0, 0, maxweight, weight, value, maxValue);
-    finalvalue = maxValue;
-}
 
 // 动态规划
 int DynamicProgramming_exp1()
@@ -85,14 +75,7 @@ int DynamicProgramming_exp1()
     return dp[weight.size() - 1][maxweight];
 }
 
-int TestExample1()
-{
-    // int finalvalue = 0;
-    // example1(finalvalue);
-    int finalvalue = DynamicProgramming_exp1();
-    cout << "最大价值是：" << finalvalue << endl;
-    return 0;
-}
+
 
 /*
 时间: 20250701 14:54
@@ -165,8 +148,8 @@ bool example2(vector<int> &result1, vector<int> &result2)
 
     return flag;
 }
-/* 
-    时间: 20250701 14:54 
+/*
+    时间: 20250701 14:54
 */
 // 动态规划
 bool DynamicProgramming_exp2()
@@ -198,39 +181,31 @@ bool DynamicProgramming_exp2()
         return false;
 }
 
-void TestExample2()
-{
-    // vector<int> result1;
-    // vector<int> result2;
-    // if (example2(result1, result2))
-    // {
-    //     cout << "true" << endl;
-    //     cout << "first: " << "[";
-    //     if (result1.size() > 1)
-    //     {
-    //         for (int i = 0; i < result1.size() - 1; i++)
-    //         {
-    //             cout << result1[i] << ",";
-    //         }
-    //     }
-    //     cout << result1[result1.size() - 1] << "]" << endl;
 
-    //     cout << "second: " << "[";
-    //     if (result2.size() > 1)
-    //     {
-    //         for (int i = 0; i < result2.size() - 1; i++)
-    //         {
-    //             cout << result2[i] << ",";
-    //         }
-    //     }
-    //     cout << result2[result2.size() - 1] << "]" << endl;
-    // }
-    // else
-    // {
-    //     cout << "false" << endl;
-    // }
-    if(DynamicProgramming_exp2())
-        cout<<"true"<<endl;
-    else
-        cout<<"false"<<endl;
+/*
+时间: 20250703 19:06
+难度：中等
+给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。
+对于数组中的任意一个整数，你都可以从 + 或 -中选择一个符号添加在前面。
+返回可以使最终数组和为目标数 S 的所有添加符号的方法数。
+*/
+
+// 回溯法（暴力解决）
+
+void backtracking3(int index, int currentsum, int &count, vector<int> &nums, int target)
+{
+    // 终止条件
+    if (index == nums.size())
+    {
+        if (currentsum == target)
+        {
+            count++;
+        }
+        return;
+    }
+
+    // 选择加法
+    backtracking3(index + 1, currentsum + nums[index], count, nums, target);
+    // 选择减法
+    backtracking3(index + 1, currentsum - nums[index], count, nums, target);
 }

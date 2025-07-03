@@ -29,6 +29,7 @@ vector<int> dailyTemperatures(vector<int> &temperatures)
                 break;
             }
         }
+        
         if (flag)
             answer[i] = 0;
     }
@@ -60,15 +61,4 @@ vector<int> dailyTemperatures_stack(vector<int> &temperatures)
     return answer;
 }
 
-int main()
-{
-    vector<int> temperatures = {30, 60, 90};
-    vector<int> answer = dailyTemperatures_stack(temperatures);
-    cout << "answer: ";
-    for (int i = 0; i < answer.size(); i++)
-    {
-        cout << answer[i] << ' ';
-    }
-    cout << endl;
-    return 0;
-}
+

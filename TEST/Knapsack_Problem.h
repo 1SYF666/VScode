@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 /*
@@ -39,7 +40,6 @@ void backtracking(int index, int currentWeight, int currentValue, int maxweight,
     }
 }
 
-
 // 动态规划
 int DynamicProgramming_exp1()
 {
@@ -74,8 +74,6 @@ int DynamicProgramming_exp1()
 
     return dp[weight.size() - 1][maxweight];
 }
-
-
 
 /*
 时间: 20250701 14:54
@@ -181,7 +179,6 @@ bool DynamicProgramming_exp2()
         return false;
 }
 
-
 /*
 时间: 20250703 19:06
 难度：中等
@@ -209,3 +206,77 @@ void backtracking3(int index, int currentsum, int &count, vector<int> &nums, int
     // 选择减法
     backtracking3(index + 1, currentsum - nums[index], count, nums, target);
 }
+
+// 动态规划
+int DynamicProgramming_exp3(vector<int> &nums, int target)
+{
+    int sum = 0;
+    for (int i = 0; i < nums.size(); i++)
+    {
+        sum += nums[i];
+    }
+
+    if(abs(target)>sum) return 0;  // 此时没有方案
+    if((target+sum)%2==1) return 0; // 此时没有方案
+
+    int bagsize = (target + sum) / 2;
+
+    vector<vector<int>> dp(nums.size(), vector<int>(bagsize + 1, 0));
+
+    // 初始化 ---- 行
+    if (nums[0] <= bagsize)
+        dp[0][nums[0]] = 1;
+
+    // 初始化 ---- 列
+    dp[0][0] = 1;
+
+    int numZero = 0;
+    for (int i = 0; i < nums.size(); i++)
+    {
+        if (nums[i] == 0)
+            numZero++;
+        dp[i][0] = (int)pow(2.0, numZero);
+    }
+
+    // 遍历
+    for (int i = 1; i < nums.size(); i++)
+    {
+        for (int j = 0; j <= bagsize; j++)
+        {
+            if (nums[i] > j)
+                dp[i][j] = dp[i - 1][j];
+            else
+                dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i]];
+        }
+    }
+
+    return dp[nums.size()-1][bagsize];
+}
+
+/*
+时间: 20250704 15:37
+474.一和零
+给你一个二进制字符串数组 strs 和两个整数 m 和 n 。
+请你找出并返回 strs 的最大子集的大小，该子集中 最多 有 m 个 0 和 n 个 1 。
+如果 x 的所有元素也是 y 的元素，集合 x 是集合 y 的 子集 。
+*/
+
+// 暴力解法
+void backtracking4(vector<string>& str,int index,vector<string>& path,vector<vector<string>>& subsets)
+{
+    subsets.push_back(path);
+    if(index>=str.size())
+    {
+        return;
+    }
+
+    for(int i = index;i<str.size();i++)
+    {
+        path.push_back(str[i]);
+        backtracking4(str,i+1,path,subsets);
+        path.pop_back();
+    }
+}
+
+
+

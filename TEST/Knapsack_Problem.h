@@ -278,5 +278,78 @@ void backtracking4(vector<string>& str,int index,vector<string>& path,vector<vec
     }
 }
 
+void example4(vector<string>& strs,int m,int n,int& result)
+{
+    
+    vector<string> path;
+    vector<vector<string>> subsets;
+    path.clear();
+    subsets.clear();
+    backtracking4(strs, 0,path,subsets);
+    cout<<"总有 "<<subsets.size()<<" 子集"<<endl;
+    for (const auto& subset : subsets) {
+        cout << "[";
+        for (size_t i = 0; i < subset.size(); i++) {
+            cout << "\"" << subset[i] << "\"";
+            if (i < subset.size() - 1) cout << ", ";
+        }
+        cout << "]" << endl;
+    }
+
+    for(int i=0;i<subsets.size();i++)
+    {
+        int onesum = 0;
+        int zerosum = 0;
+        for(int j = 0;j<subsets[i].size();j++)
+        {
+            // 字符串
+            for(int k = 0;k<subsets[i][j].size();k++)
+            {
+                // 字符
+                if(subsets[i][j][k]=='1')
+                {
+                    onesum++;
+                }
+                else
+                {
+                    zerosum++;
+                }
+
+            }
+        }
+
+        if(zerosum<=m&&onesum<=n)
+        {
+            result = result>subsets[i].size()?result: subsets[i].size();
+        }
+
+    }
+}
+
+// 动态规划版本
+int DynamicProgramming_exp3(vector<string> &strs, int m,int n)
+{
+    vector< vector<int> > dp(m+1,vector<int>(n+1,0));  // 默认初始化为0
+
+    for(string str:strs)
+    {
+        int oneNum = 0,zeroNum = 0;
+        for (char c:str)
+        {
+            if(c=='0') zeroNum++;
+            else
+                oneNum++;
+        }
+        for(int i = m;i>=zeroNum;i--)
+        {
+            for(int j = n;j>=oneNum;j--)
+            {
+                dp[i][j] = max(dp[i][j],dp[i-zeroNum][j-oneNum]+1);
+            }
+        }
+    }
+
+    return dp[m][n];
+}
 
 

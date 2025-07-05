@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <cmath>
 
 using namespace std;
 
@@ -29,7 +30,7 @@ vector<int> dailyTemperatures(vector<int> &temperatures)
                 break;
             }
         }
-        
+
         if (flag)
             answer[i] = 0;
     }
@@ -49,10 +50,10 @@ vector<int> dailyTemperatures_stack(vector<int> &temperatures)
         }
         else
         {
-            while (st.size()&&temperatures[i] > temperatures[st.top()])
+            while (st.size() && temperatures[i] > temperatures[st.top()])
             {
                 answer[st.top()] = i - st.top();
-                st.pop();   // 出
+                st.pop(); // 出
             }
             st.push(i); // 入
         }
@@ -61,4 +62,46 @@ vector<int> dailyTemperatures_stack(vector<int> &temperatures)
     return answer;
 }
 
+/*
+时间: 20250705 14:59
+    221.最大正方形
+    在一个由 '0' 和 '1' 组成的二维矩阵内，找到只包含 '1' 的最大正方形，并返回其面积。
+*/
 
+// 暴力法
+int MaximalSquare(vector<vector<char>> &matrix)
+{
+    int row = matrix.size();
+    int col = matrix[0].size();
+    int th = row < col ? row : col;
+    int result = 0;
+    for (int step = 1; step <= th; step++)
+    {
+        
+        int flag = 0;
+        // 正方形尺寸
+        for (int i = 0; i < matrix.size() - step + 1; i++)
+        {
+            for (int j = 0; j < matrix[0].size() - step + 1; j++)
+            {
+                int onesum = 0;
+                // 统计正方形
+                for (int krow = 0; krow < step; krow++)
+                {
+                    for (int kcol = 0; kcol < step; kcol++)
+                        if (matrix[i + krow][j + kcol] == '1')
+                            onesum++;
+                }
+                if (onesum == step * step)
+                {
+                    result = step*step;
+                    flag = 1;
+                    break;
+                }
+            }
+            if(flag)
+                break;
+        }
+    }
+    return result;
+}

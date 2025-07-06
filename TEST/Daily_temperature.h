@@ -77,7 +77,7 @@ int MaximalSquare(vector<vector<char>> &matrix)
     int result = 0;
     for (int step = 1; step <= th; step++)
     {
-        
+
         int flag = 0;
         // 正方形尺寸
         for (int i = 0; i < matrix.size() - step + 1; i++)
@@ -94,14 +94,60 @@ int MaximalSquare(vector<vector<char>> &matrix)
                 }
                 if (onesum == step * step)
                 {
-                    result = step*step;
+                    result = step * step;
                     flag = 1;
                     break;
                 }
             }
-            if(flag)
+            if (flag)
                 break;
         }
     }
     return result;
+}
+
+// 动态规划方法
+
+int MaximalSquare_dynamicprogramming(vector<vector<char>> &matrix)
+{
+    int row = matrix.size();
+    int col = matrix[0].size();
+    vector<vector<int>> dp(row, vector<int>(col, 0));
+    int maxside = 0;
+    // 初始化 第一行
+    for (int j = 0; j < col; j++)
+    {
+        if (matrix[0][j] == '1')
+        {
+            dp[0][j] = 1;
+            maxside = 1;
+        }
+        else
+            dp[0][j] = 0;
+    }
+    // 初始化 第一列
+    for (int i = 0; i < row; i++)
+    {
+        if (matrix[i][0] == '1')
+        {
+            dp[i][0] = 1;
+            maxside = 1;
+        }
+        else
+            dp[i][0] = 0;
+    }
+
+    // 开始遍历
+    for (int i = 1; i < row; i++)
+    {
+        for (int j = 1; j < col; j++)
+        {
+            if (matrix[i][j] == '1')
+                dp[i][j] = min(min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
+            else
+                dp[i][j] = 0;
+            maxside = max(maxside, dp[i][j]);
+        }
+    }
+    return maxside * maxside;
 }

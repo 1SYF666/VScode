@@ -44,8 +44,52 @@ int DynamicProgramming_exp1(const vector<int> &weight, const vector<int> value, 
             if (j < weight[i])
                 dp[i][j] = dp[i - 1][j];
             else
-                dp[i][j] = max(dp[i - 1][j],dp[i][j-weight[i]]+value[i]);
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - weight[i]] + value[i]);
         }
     }
-    return dp[n-1][maxweight];
+    return dp[n - 1][maxweight];
+}
+
+/*
+518. 零钱兑换 II
+给你一个整数数组 coins 表示不同面额的硬币，另给一个整数 amount 表示总金额。
+请你计算并返回可以凑成总金额的硬币组合数。如果任何硬币组合都无法凑出总金额，返回 0 。
+假设每一种面额的硬币有无限个。
+题目数据保证结果符合 32 位带符号整数
+*/
+
+// 动态规划
+int DynamicProgramming_exp2(const vector<int> &coins, const int amount)
+{
+    vector<vector<int>> dp(coins.size(), vector<int>(amount + 1, 0));
+
+    // 初始化
+    for (int j = coins[0]; j <= amount; j++)
+    {
+        if (j % coins[0] == 0)
+            dp[0][j] = 1;
+    }
+
+    // 初始化最左列
+    for (int i = 0; i < coins.size(); i++)
+    {
+        dp[i][0] = 1;
+    }
+
+    // 开始遍历
+    for (int i = 1; i < coins.size(); i++)
+    {
+        for (int j = 1; j <= amount; j++)
+        {
+            if(j>=coins[i])
+            {
+                dp[i][j] = dp[i-1][j] + dp[i][j-coins[i]];
+            }
+            else
+            {
+                dp[i][j] = dp[i-1][j];
+            }
+        }
+    }
+    return dp[coins.size() - 1][amount];
 }

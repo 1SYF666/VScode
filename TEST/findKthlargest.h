@@ -25,5 +25,5 @@ int findKthlargest(vector<int> &nums, int k)
 // O(n)解法
 int findKthlargest_On(vector<int> &nums, int k)
 {
-    
+    return 0;
 }

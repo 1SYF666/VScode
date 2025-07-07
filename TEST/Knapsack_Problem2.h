@@ -23,6 +23,29 @@ void backtracking_exp1(const vector<int> &weight, const vector<int> value, const
     // 可以无限使用
     for (int i = 0; i < weight.size(); i++)
     {
-        backtracking_exp1(weight, value, maxweight, currentweight+weight[i], currentvlaue+value[i], maxvalue);
+        backtracking_exp1(weight, value, maxweight, currentweight + weight[i], currentvlaue + value[i], maxvalue);
     }
+}
+
+int DynamicProgramming_exp1(const vector<int> &weight, const vector<int> value, int n, const int maxweight)
+{
+    vector<vector<int>> dp(n, vector<int>(maxweight + 1, 0));
+
+    // 初始化
+    for (int j = 1; j <= maxweight; j++)
+    {
+        dp[0][j] = j / weight[0] * value[0];
+    }
+
+    for (int i = 1; i < n; i++)
+    {
+        for (int j = 1; j <= maxweight; j++)
+        {
+            if (j < weight[i])
+                dp[i][j] = dp[i - 1][j];
+            else
+                dp[i][j] = max(dp[i - 1][j],dp[i][j-weight[i]]+value[i]);
+        }
+    }
+    return dp[n-1][maxweight];
 }

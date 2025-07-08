@@ -22,8 +22,61 @@ int findKthlargest(vector<int> &nums, int k)
     return nums[k - 1];
 }
 
-// O(n)解法
+// O(n)解法 -- 代码依旧超时
+int static partition(vector<int> &nums, int startindex, int endindex)
+{
+
+    int pivot = nums[startindex];
+    int pivotindex = startindex;
+    int left = startindex;
+    int right = endindex;
+    // 左边放小于pivot ,右边放大于pivot
+    while (left < right)
+    {
+
+        while (left < right)
+        {
+            if (nums[right] < pivot)
+            {
+                nums[left] = nums[right];
+                pivotindex = right;
+                left++;
+                break;
+            }
+            right--;
+        }
+
+        while (left < right)
+        {
+            if (nums[left] > pivot)
+            {
+                nums[right] = nums[left];
+                pivotindex = left;
+                right--;
+                break;
+            }
+            left++;
+        }
+    }
+    nums[pivotindex] = pivot;
+    return pivotindex;
+}
+void static quicksort(vector<int> &nums, int left, int right)
+{
+    if (right - left <= 0)
+        return;
+    int par = partition(nums, left, right);
+    quicksort(nums, left, par - 1);
+    quicksort(nums, par + 1, right);
+}
+
 int findKthlargest_On(vector<int> &nums, int k)
 {
+    quicksort(nums, 0, nums.size() - 1);
+    for (int i = nums.size() - 1; i >= nums.size() - k; i--)
+    {
+        if(i == nums.size()-k )
+            return nums[i];
+    }
     return 0;
 }

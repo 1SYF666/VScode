@@ -59,9 +59,10 @@ int DynamicProgramming_exp1(const vector<int> &weight, const vector<int> value, 
 */
 
 // 动态规划
+#include <cstdint>
 int DynamicProgramming_exp2(const vector<int> &coins, const int amount)
 {
-    vector<vector<int>> dp(coins.size(), vector<int>(amount + 1, 0));
+    vector<vector<uint64_t>> dp(coins.size(), vector<uint64_t>(amount + 1, 0));
 
     // 初始化
     for (int j = coins[0]; j <= amount; j++)
@@ -81,15 +82,31 @@ int DynamicProgramming_exp2(const vector<int> &coins, const int amount)
     {
         for (int j = 1; j <= amount; j++)
         {
-            if(j>=coins[i])
+            if (j >= coins[i])
             {
-                dp[i][j] = dp[i-1][j] + dp[i][j-coins[i]];
+                dp[i][j] = dp[i - 1][j] + dp[i][j - coins[i]];
             }
             else
             {
-                dp[i][j] = dp[i-1][j];
+                dp[i][j] = dp[i - 1][j];
             }
         }
     }
     return dp[coins.size() - 1][amount];
+}
+
+// 暴力求解法
+
+int backtracking_exp2(const vector<int> &coins, int amount, int index)
+{
+    if (amount == 0)
+        return 1;
+    if(amount<0||index>=coins.size()) return 0;
+
+    // 不使用当前硬币
+    int waysWithout = backtracking_exp2(coins,amount,index+1);
+    // 使用当前硬币
+    int waysWith = backtracking_exp2(coins,amount-coins[index],index);
+
+    return waysWith+waysWithout;
 }

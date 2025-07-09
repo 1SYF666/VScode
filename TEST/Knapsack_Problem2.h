@@ -101,12 +101,80 @@ int backtracking_exp2(const vector<int> &coins, int amount, int index)
 {
     if (amount == 0)
         return 1;
-    if(amount<0||index>=coins.size()) return 0;
+    if (amount < 0 || index >= coins.size())
+        return 0;
 
     // 不使用当前硬币
-    int waysWithout = backtracking_exp2(coins,amount,index+1);
+    int waysWithout = backtracking_exp2(coins, amount, index + 1);
     // 使用当前硬币
-    int waysWith = backtracking_exp2(coins,amount-coins[index],index);
+    int waysWith = backtracking_exp2(coins, amount - coins[index], index);
 
-    return waysWith+waysWithout;
+    return waysWith + waysWithout;
+}
+
+/*
+时间：20250709 14:24
+377. 组合总和 Ⅳ
+中等
+给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target 。请你从 nums 中找出并返回总和为 target 的元素组合的个数。
+题目数据保证答案符合 32 位整数范围。
+*/
+
+// 暴力求解
+int backtracking_exp3(vector<int> &nums, int target, int currentsum, int index)
+{
+    // 不重复（1 1 2）和（2 1 1） 是一类 不考虑顺序
+    if (currentsum > target || index >= nums.size())
+    {
+        return 0;
+    }
+    if (currentsum == target)
+    {
+        return 1;
+    }
+    // 不选择当前
+    int without = backtracking_exp3(nums, target, currentsum, index + 1);
+    // 选择当前
+    int with = backtracking_exp3(nums, target, currentsum + nums[index], index);
+
+    return with + without;
+}
+
+void backtracking_exp4(vector<int> &nums, int target, int currentsum, int &count)
+{
+    // 重复,（1 1 2）和（2 1 1） 是两类 考虑顺序
+    if (currentsum > target)
+    {
+        return;
+    }
+    if (currentsum == target)
+    {
+        count++;
+        return;
+    }
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        backtracking_exp4(nums, target, currentsum + nums[i], count);
+    }
+
+    return;
+}
+
+// 动态规划
+
+int DynamicProgramming_exp3(vector<int> &numns, int target)
+{
+    vector<uint64_t> dp(target + 1, 0);
+    dp[0] = 1;
+    // 开始遍历
+    for (int i = 0; i <= target; i++)
+    {
+        for (int j = 0; j < numns.size(); j++)
+        {
+            if(i-numns[j]>=0)
+                dp[i]+=dp[i-numns[j]];
+        }
+    }
+    return dp[target];
 }

@@ -61,27 +61,114 @@ int Climbstairs_dynamicprogramming(int n)
 */
 
 // 暴力算法
-void coinchange_backtracking(vector<int>nums,int amount,uint64_t currentsum,int64_t depth,int64_t& count)
+void coinchange_backtracking(vector<int> nums, int amount, uint64_t currentsum, int64_t depth, int64_t &count)
 {
-    if(currentsum == amount)
+    if (currentsum == amount)
     {
-        count = min(count,depth);
+        count = min(count, depth);
         return;
     }
-    if(currentsum>amount)
+    if (currentsum > amount)
     {
         return;
     }
-    
-    // 上界剪枝：如果已经用的硬币数不比 best 少，就没必要继续
-    if(depth>count) return;
 
-    for(int i = 0;i<nums.size();i++)
+    // 上界剪枝：如果已经用的硬币数不比 best 少，就没必要继续
+    if (depth > count)
+        return;
+
+    for (int i = 0; i < nums.size(); i++)
     {
-        coinchange_backtracking(nums,amount,currentsum+nums[i],depth+1,count);
+        coinchange_backtracking(nums, amount, currentsum + nums[i], depth + 1, count);
     }
 }
 
+//
+int coinchange_dynamicprogramming(vector<int> &coins, int amount)
+{
+    vector<int> dp(amount + 1, INT32_MAX);
+    dp[0] = 0;
 
+    for (int i = 0; i < coins.size(); i++)
+    {
+        for (int j = coins[i]; j <= amount; j++)
+        {
+            if (dp[j - coins[i]] != INT32_MAX)
+                dp[j] = min(dp[j], dp[j - coins[i]] + 1);
+        }
+    }
+    if (dp[amount] == INT32_MAX)
+        return -1;
+    return dp[amount];
+}
 
+/*
+时间: 20250711 15:27
+279. 完全平方数
+中等
+给你一个整数 n ，返回 和为 n 的完全平方数的最少数量 。
+完全平方数 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，1、4、9 和 16 都是完全平方数，而 3 和 11 不是。
+*/
 
+// 暴力法
+static void perfect_squre_backtracking(vector<int> &nums, int n, uint32_t currentsum, int depth, int &count)
+{
+    if (currentsum == n)
+    {
+        count = min(depth, count);
+        return;
+    }
+
+    if (currentsum > n)
+    {
+        return;
+    }
+    if (depth >= count) // 剪纸操作
+        return;
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        perfect_squre_backtracking(nums, n, currentsum + nums[i], depth + 1, count);
+    }
+}
+
+int numSquares_bt(int n)
+{
+    vector<int> nums;
+    // 获取完全平方数
+    for (int i = 1; i <= n; i++)
+    {
+        if (i * i <= n)
+            nums.push_back(i * i);
+    }
+    int result = INT32_MAX;
+    perfect_squre_backtracking(nums, n, 0, 0, result);
+    return result;
+}
+
+// 动态规划
+int numSquares_dynamicprogramming(int n)
+{
+    vector<int> nums;
+    // 获取完全平方数
+    for (int i = 1; i <= n; i++)
+    {
+        if (i * i <= n)
+            nums.push_back(i * i);
+    }
+    vector<int> dp(n+1,INT32_MAX);
+    dp[0] = 0;
+    
+    for(int i = 0;i<nums.size();i++)
+    {
+        for(int j = nums[i];j<=n;j++)
+        {
+            if(dp[j-nums[i]]!=INT32_MAX)
+            {
+                dp[j] = min(dp[j],dp[j-nums[i]]+1);
+            }
+        }
+    }
+
+    return dp[n];
+}

@@ -1,6 +1,7 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include <string>
 using namespace std;
 /*
 时间: 20250707 11:15
@@ -120,4 +121,47 @@ int rob(vector<int> nums)
         dp[i][1] = dp[i - 1][0] + nums[i];
     }
     return max(dp[nums.size() - 1][0], dp[nums.size() - 1][1]);
+}
+
+/*
+时间: 20250713 16:49
+139. 单词拆分
+中等
+给你一个字符串 s 和一个字符串列表 wordDict 作为字典。如果可以利用字典中出现的一个或多个单词拼接出 s 则返回 true。
+注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+*/
+
+// 查找字符串对应的索引
+int cmpstr_bf(string str, string substr)
+{
+    int i = 0, j = 0;
+    int Lenlong = str.size();
+    int lenshort = substr.size();
+
+    while (i < Lenlong)
+    {
+        if (str[i]-'a' == substr[j]-'a')
+        {
+            i++;
+            j++;
+        }
+        else
+        {
+            i++;
+            j = 0;
+            if (i == Lenlong - lenshort + 1)
+            {
+                break;
+            }
+        }
+        if (j == lenshort)
+            return i - lenshort;
+    }
+    return -1; // 没找到
+
+}
+
+bool wordbreak_bf(string s, vector<string> &wordDict)
+{
+    return true;
 }

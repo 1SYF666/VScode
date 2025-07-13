@@ -6,8 +6,9 @@
 
 int main()
 {
-    vector<int> nums = {2, 2, 1, 1, 1, 2, 2};
-    int result = majorityelements(nums);
+    string str = "coletleetleet";
+    string substr = "leet";
+    int result = cmpstr_bf(str,substr);
     cout << result << endl;
     return 0;
 }

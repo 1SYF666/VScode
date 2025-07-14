@@ -6,9 +6,11 @@
 
 int main()
 {
-    string str = "coletleetleet";
-    string substr = "leet";
-    int result = cmpstr_bf(str,substr);
+    string str = "aaaaaaa";
+    vector<string> worddict = {"aaaa","aaa"};
+    bool result = wordbreak_brutal(str, worddict);
+    if (result)
+        cout << "1" << endl;
     cout << result << endl;
     return 0;
 }

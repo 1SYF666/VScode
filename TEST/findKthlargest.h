@@ -2,6 +2,7 @@
 #include <deque>
 #include <algorithm>
 #include <string>
+#include <unordered_set>
 using namespace std;
 /*
 时间: 20250707 11:15
@@ -140,7 +141,7 @@ int cmpstr_bf(string str, string substr)
 
     while (i < Lenlong)
     {
-        if (str[i]-'a' == substr[j]-'a')
+        if (str[i] - 'a' == substr[j] - 'a')
         {
             i++;
             j++;
@@ -158,10 +159,86 @@ int cmpstr_bf(string str, string substr)
             return i - lenshort;
     }
     return -1; // 没找到
-
 }
 
+// 排序
+static bool cmp(string a, string b)
+{
+    return a.size() < b.size();
+}
+
+// 暴力求解 解答错误：s = "cars",worddict = {"car","ca","rs"} return true;
 bool wordbreak_bf(string s, vector<string> &wordDict)
 {
-    return true;
+    string stemp;
+    string str = s;
+    int st = 0;
+
+    for (int i = 0; i < wordDict.size();)
+    {
+        stemp = wordDict[i];
+        st = cmpstr_bf(str, stemp);
+        if (st == -1)
+        {
+            i++;
+            continue;
+        }
+        else
+        {
+            string strtemp = str;
+            str.clear();
+            // 剔除已找到的单词
+            for (int j = 0; j < st; j++)
+            {
+                str.push_back(strtemp[j]);
+            }
+            for (int j = st + stemp.size(); j < strtemp.size(); j++)
+            {
+                str.push_back(strtemp[j]);
+            }
+            if (str.size() == 0)
+            {
+                return true;
+            }
+            i = 0;
+        }
+    }
+
+    return false;
 }
+
+bool wordbreak(string s, vector<string> &wordDict)
+{
+    bool a = wordbreak_bf(s, wordDict);
+    sort(wordDict.begin(), wordDict.end(), cmp);
+    bool b = wordbreak_bf(s, wordDict);
+    return a || b;
+}
+
+// 暴力求解正确版--上面是解题思路错误 （应该那切分s中子串 与字典中字符串比较）
+static bool wordbreak_bt(string s, int pos, unordered_set<string> m)
+{
+    int n = s.size();
+    if (pos == n)
+        return true;
+
+    for (int i = pos + 1; i <= n; i++)
+    {
+        // 取 s[pos..i-1] 作为一个候选单词
+        string w = s.substr(pos, i-pos);
+        if (m.count(w))
+        {
+            if (wordbreak_bt(s, i, m))
+                return true;
+        }
+    }
+    return false;
+}
+
+bool wordbreak_brutal(string s, vector<string> &wordDict)
+{
+    unordered_set<string> m(wordDict.begin(), wordDict.end());
+    return wordbreak_bt(s, 0, m);
+}
+
+// 动态规划求解

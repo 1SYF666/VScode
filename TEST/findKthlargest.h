@@ -123,6 +123,25 @@ int rob(vector<int> nums)
     }
     return max(dp[nums.size() - 1][0], dp[nums.size() - 1][1]);
 }
+int rob_v2(vector<int> nums)
+{
+    vector<int> dp(nums.size(),0);
+    // 初始化
+    dp[0] = nums[0];
+    for (int i = 1; i < nums.size(); i++)
+    {
+        if(i>=2)
+        {
+            dp[i] = max(dp[i-2]+nums[i],dp[i-1]);
+        }
+        else
+        {
+            dp[i] = max(dp[i-1],nums[i]);
+        }
+    }
+    return dp[nums.size()-1];
+}
+
 
 /*
 时间: 20250713 16:49

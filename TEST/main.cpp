@@ -7,8 +7,8 @@
 
 int main()
 {
-    vector<int> prices = {7,6,4,3,1};
-    int result = maxprofit2_dp(prices);
+    vector<int> prices = {6,1,3,2,4,7};
+    int result = maxprofit3_bf2(prices);
     cout << result << endl;
     return 0;
 }

@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 using namespace std;
 /*
 时间：20250715 9:49
@@ -154,7 +155,7 @@ int maxprofit3_bf(vector<int> &prices)
     }
     return 0;
 }
-// 通过率： 201 / 214 -- 超时 
+// 通过率： 201 / 214 -- 超时
 int maxprofit3_bf2(vector<int> &prices)
 {
     int len = prices.size();
@@ -178,3 +179,112 @@ int maxprofit3_bf2(vector<int> &prices)
     }
     return sum;
 }
+
+// 动态规划
+
+/*
+时间：20250717 10:57
+188. 买卖股票的最佳时机 IV
+困难
+给你一个整数数组 prices 和一个整数 k ，其中 prices[i] 是某支给定的股票在第 i 天的价格。
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 k 笔交易。也就是说，你最多可以买 k 次，卖 k 次。
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+*/
+// 通过率：192/210  -- 只计算k = 1 和 2 的情况
+int maxProfit4_bf1(int k, vector<int> &prices)
+{
+    if (k <= 2)
+    {
+        int len = prices.size();
+        int sum = 0, sum1 = 0, sum2 = 0;
+        for (int i = 0; i < len; i++)
+        {
+            for (int j = i + 1; j < len; j++)
+            {
+                sum1 = prices[j] - prices[i];
+
+                sum2 = 0;
+                for (int k = j + 1; k < len; k++)
+                {
+                    for (int z = k + 1; z < len; z++)
+                    {
+                        sum2 = max(sum2, prices[z] - prices[k]);
+                    }
+                }
+                sum = max(sum, sum1 + sum2);
+            }
+        }
+        return sum;
+    }
+    else
+    {
+        return 0;
+    }
+}
+// 通过率：199/210  
+int maxProfit4_bf2(int k, vector<int> &prices)
+{
+    if (prices.size() <= 1)
+    {
+        return 0;
+    }
+    vector<int> diff(prices.size() - 1, 0);
+    int count = 0;
+    int index = 0;
+    for (int i = 1; i < prices.size(); i++)
+    {
+        diff[i - 1] = prices[i] - prices[i - 1];
+    }
+    vector<int> temp(diff.size(), 0);
+    temp[0] = diff[0];
+    for (int i = 1; i < diff.size(); i++)
+    {
+
+        if (diff[i] < 0 && diff[i - 1] >= 0)
+        {
+            temp[++index] = diff[i];
+        }
+        else if (diff[i] < 0 && diff[i - 1] < 0)
+        {
+            temp[index] += diff[i];
+        }
+        else if (diff[i] >= 0 && diff[i - 1] >= 0)
+        {
+            temp[index] += diff[i];
+        }
+        else if (diff[i] >= 0 && diff[i - 1] < 0)
+        {
+            temp[++index] = diff[i];
+        }
+    }
+
+    sort(temp.begin(), temp.end());
+    int sum = 0;
+    for (int i = temp.size() - 1; i >= 0; i--)
+    {
+        if (temp[i] > 0 && count < k)
+        {
+            count++;
+            sum += temp[i];
+        }
+    }
+    return sum;
+}
+
+
+
+/*
+时间：20250717 13:54
+309. 买卖股票的最佳时机含冷冻期
+中等
+给定一个整数数组prices，其中第  prices[i] 表示第 i 天的股票价格 。​
+设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+*/
+
+int maxProfit5_bf1(vector<int> &prices)
+{
+    return 0;
+}
+

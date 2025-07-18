@@ -4,11 +4,16 @@
 #include "Climbstairs.h"
 #include "Majority_elements.h"
 #include "Besttime.h"
+#include "Island.h"
 
 int main()
 {
-    vector<int> prices = {6,1,3,2,4,7};
-    int result = maxprofit3_bf2(prices);
+    vector<vector<char>> grid = {
+        {'1', '1', '0', '0', '0'},
+        {'1', '1', '0', '0', '0'},
+        {'0', '0', '1', '0', '0'},
+        {'0', '0', '0', '1', '1'}};
+    int result = numIslands(grid);
     cout << result << endl;
     return 0;
 }

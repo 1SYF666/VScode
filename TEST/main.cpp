@@ -8,12 +8,8 @@
 
 int main()
 {
-    vector<vector<char>> grid = {
-        {'1', '1', '0', '0', '0'},
-        {'1', '1', '0', '0', '0'},
-        {'0', '0', '1', '0', '0'},
-        {'0', '0', '0', '1', '1'}};
-    int result = numIslands(grid);
+    vector<int> prices = {2, 1, 4};
+    int result = maxProfit5_dp(prices);
     cout << result << endl;
     return 0;
 }

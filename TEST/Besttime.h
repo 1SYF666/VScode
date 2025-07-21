@@ -181,6 +181,34 @@ int maxprofit3_bf2(vector<int> &prices)
 }
 
 // 动态规划
+int maxprofit3_dp(vector<int> &prices)
+{
+    // 0 不操作
+    // 1 第一次持有
+    // 2 第一次不持有
+    // 3 第二次持有
+    // 4 第二次不持有
+    int row = prices.size();
+    vector<vector<int>> dp(row, vector<int>(5, 0));
+
+    // 初始化
+    dp[0][0] = 0;
+    dp[0][1] = -prices[0];
+    dp[0][2] = 0;
+    dp[0][3] = -prices[0];
+    dp[0][4] = 0;
+
+    for (int i = 1; i < row; i++)
+    {
+        dp[i][0] = dp[i - 1][0];
+        dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i]);
+        dp[i][2] = max(dp[i - 1][2], dp[i - 1][1] + prices[i]);
+
+        dp[i][3] = max(dp[i - 1][3], dp[i - 1][2] - prices[i]);
+        dp[i][4] = max(dp[i - 1][4], dp[i - 1][3] + prices[i]);
+    }
+    return dp[row - 1][4];
+}
 
 /*
 时间：20250717 10:57
@@ -221,7 +249,7 @@ int maxProfit4_bf1(int k, vector<int> &prices)
         return 0;
     }
 }
-// 通过率：199/210  
+// 通过率：199/210
 int maxProfit4_bf2(int k, vector<int> &prices)
 {
     if (prices.size() <= 1)
@@ -271,7 +299,44 @@ int maxProfit4_bf2(int k, vector<int> &prices)
     return sum;
 }
 
+// 动态规划
+int maxProfit4_dp(int k, vector<int> &prices)
+{
+    // 0 不操作
+    // 1 第一次持有
+    // 2 第一次不持有
+    // 3 第二次持有
+    // 4 第二次不持有
+    // ...
+    int row = prices.size();
+    int col = 2 * k + 1;
+    vector<vector<int>> dp(row, vector<int>(col, 0));
+    for (int i = 1; i < col; i = i + 2)
+    {
+        dp[0][i] = -prices[0];
+    }
 
+    for (int i = 1; i < row; i++)
+    {
+        dp[i][0] = dp[i - 1][0];
+        // dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i]);
+        // dp[i][2] = max(dp[i - 1][2], dp[i - 1][1] + prices[i]);
+        // dp[i][3] = max(dp[i - 1][3], dp[i - 1][2] - prices[i]);
+        // dp[i][4] = max(dp[i - 1][4], dp[i - 1][3] + prices[i]);
+        for (int j = 1; j < col; j++)
+        {
+            if (j % 2 == 1) // 奇数
+            {
+                dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - 1] - prices[i]);
+            }
+            else // 偶数
+            {
+                dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - 1] + prices[i]);
+            }
+        }
+    }
+    return dp[row - 1][col - 1];
+}
 
 /*
 时间：20250717 13:54
@@ -283,8 +348,27 @@ int maxProfit4_bf2(int k, vector<int> &prices)
 注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
 */
 
-int maxProfit5_bf1(vector<int> &prices)
+// 动态规划
+int maxProfit5_dp(vector<int> &prices)
 {
-    return 0;
+    // 0 持有
+    // 1 不持有
+    int row = prices.size();
+    vector<vector<int>> dp(row, vector<int>(2, 0));
+    dp[0][0] = -prices[0];
+    dp[0][1] = 0;
+    for (int i = 1; i < row; i++)
+    {
+        if (i == 1)
+        {
+            dp[i][0] = max(dp[i - 1][0], -prices[i]);
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+        }
+        else
+        {
+            dp[i][0] = max(dp[i - 1][0], dp[i - 2][1] - prices[i]);
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i]);
+        }
+    }
+    return dp[row - 1][1];
 }
-

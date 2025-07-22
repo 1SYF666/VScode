@@ -77,3 +77,46 @@ vector<int> productExceptSelfv2(vector<int> &nums)
 
     return prefixproduct;
 }
+
+/*
+时间:20250722 14:54
+300. 最长递增子序列
+中等
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+子序列 是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+*/
+// 通过率：36/55
+static void lengthOfLTSbacktracking(int index, const vector<int> &nums, vector<int> &path, int &best)
+{
+    int n = nums.size();
+    // 退出
+    // 剪枝
+    if ((int)path.size() + (n - index) <= best)
+        return;
+
+    if (index == n)
+    {
+        best = max(best, (int)path.size());
+        return;
+    }
+
+    // 开始遍历
+    for (int i = index; i < n; i++)
+    {
+        if (path.empty()||nums[i]>path.back())
+        {
+            path.push_back(nums[i]);
+            lengthOfLTSbacktracking(i + 1, nums, path, best);
+            path.pop_back();
+        }
+    }
+    best = max(best, (int)path.size());
+}
+
+int lengthOfLTS_bf(vector<int> &nums)
+{
+    int result = 0;
+    vector<int> path;
+    lengthOfLTSbacktracking(0, nums, path, result);
+    return result;
+}

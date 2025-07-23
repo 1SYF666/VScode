@@ -103,7 +103,7 @@ static void lengthOfLTSbacktracking(int index, const vector<int> &nums, vector<i
     // 开始遍历
     for (int i = index; i < n; i++)
     {
-        if (path.empty()||nums[i]>path.back())
+        if (path.empty() || nums[i] > path.back())
         {
             path.push_back(nums[i]);
             lengthOfLTSbacktracking(i + 1, nums, path, best);
@@ -119,4 +119,101 @@ int lengthOfLTS_bf(vector<int> &nums)
     vector<int> path;
     lengthOfLTSbacktracking(0, nums, path, result);
     return result;
+}
+
+int lengthOfLTS_dp(vector<int> &nums)
+{
+    int n = nums.size();
+    // dp[i] 表示0~i的数组的最长子序列,至少为1
+    vector<int> dp(n, 1);
+    int result = 1;
+    for (int i = 1; i < n; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            if (nums[i] > nums[j])
+                dp[i] = max(dp[i], dp[j] + 1);
+        }
+        result = max(result, dp[i]);
+    }
+
+    return result;
+}
+
+/*
+时间：20250723 15:19
+674. 最长连续递增序列
+简单
+给定一个未经排序的整数数组，找到最长且 连续递增的子序列，并返回该序列的长度。
+连续递增的子序列 可以由两个下标 l 和 r（l < r）确定，如果对于每个 l <= i < r，都有 nums[i] < nums[i + 1] ，那么子序列 [nums[l], nums[l + 1], ..., nums[r - 1], nums[r]] 就是连续递增子序列。
+*/
+
+int findlengthofLCIS_bf(vector<int> &nums)
+{
+    int n = nums.size();
+    int result = 0;
+    int best = 1;
+    for (int i = 0; i < n; i++)
+    {
+        best = 1;
+        for (int j = i + 1; j < n; j++)
+        {
+            if (nums[j] > nums[j - 1])
+            {
+                best++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        result = max(result, best);
+    }
+    return result;
+}
+int findlengthofLCIS_dp(vector<int> &nums)
+{
+    int n = nums.size();
+    // dp[i] 表示 0-i的整数数组的最长连续递增子序列长度
+    vector<int> dp(n, 1);
+    int result = 1;
+    for (int i = 1; i < n; i++)
+    {
+        if (nums[i] > nums[i - 1])
+            dp[i] = dp[i - 1] + 1;
+        result = max(result, dp[i]);
+    }
+    return result;
+}
+int findlengthofLCIS_greedy(vector<int> &nums)
+{
+    int n = nums.size();
+    // dp[i] 表示 0-i的整数数组的最长连续递增子序列长度
+    int count = 1;
+    int result = 1;
+    for (int i = 1; i < n; i++)
+    {
+        if (nums[i] > nums[i - 1])
+        {
+            count++;
+        }
+        else
+        {
+            count = 1;
+        }
+        result = max(result, count);
+    }
+    return result;
+}
+
+/*
+时间：20250723 15:19
+718. 最长重复子数组
+中等
+给两个整数数组 nums1 和 nums2 ，返回 两个数组中 公共的 、长度最长的子数组的长度 。
+*/
+//通过率27/55 绝对有问题
+int findLength_bf(vector<int> &nums1, vector<int> &nums2)
+{
+    return 0;
 }

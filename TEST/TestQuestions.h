@@ -10,7 +10,41 @@ using namespace std;
 // 长桌合并糖果
 int distribution_table(vector<int> &nums)
 {
-    
+    int n = nums.size();
+    // 前缀和,用于O(1)求区间和
+    vector<int> pre(n + 1, 0);
+    for (int i = 0; i < n; i++)
+    {
+        pre[i + 1] = pre[i] + nums[i];
+    }
+    auto rangeSum = [&](int l, int r)
+    {
+        return pre[r + 1] - pre[l];
+    };
+
+    // dp[i][j] == 合并区间[i,j]的最大得分
+    // 初始化dp[i][i] = 0(单堆不需要合并，得分0)
+    vector<vector<int>> dp(n, vector<int>(n, 0));
+
+    // 枚举长度 len 从 2 到 n
+    for (int len = 2; len <= n; len++)
+    {
+        for (int i = 0; i + len - 1 < n; i++)
+        {
+            int j = i + len - 1;
+            int best = 0;
+            int total = rangeSum(i, j);
+
+            // 枚举最后一次合并点 K:先合并[i...k] 和[k+1...j]
+            // 然后再把这两堆合并，得分 = dp[i][k] + dp[k+1][j] + total
+            for (int k = i; k < j; k++)
+            {
+                best = max(best, dp[i][k] + dp[k + 1][j] + total);
+            }
+            dp[i][j] = best;
+        }
+    }
+    return dp[0][n - 1];
 }
 
 // 圆桌合并糖果

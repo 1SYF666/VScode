@@ -1,4 +1,5 @@
 #include <vector>
+#include <string>
 using namespace std;
 /*
 时间:20250721 16:45
@@ -212,8 +213,88 @@ int findlengthofLCIS_greedy(vector<int> &nums)
 中等
 给两个整数数组 nums1 和 nums2 ，返回 两个数组中 公共的 、长度最长的子数组的长度 。
 */
-//通过率27/55 绝对有问题
+// 通过率：53/55
 int findLength_bf(vector<int> &nums1, vector<int> &nums2)
 {
-    return 0;
+    int n1 = nums1.size();
+    int n2 = nums2.size();
+    int result = 0;
+    for (int i = 0; i < n1; i++)
+    {
+        for (int j = 0; j < n2; j++)
+        {
+            int k = 0;
+            while (i + k < n1 && j + k < n2 && nums1[i + k] == nums2[j + k])
+            {
+                k++;
+            }
+            if (result < k)
+                result = k;
+        }
+    }
+
+    return result;
+}
+
+int findLength_dp(vector<int> &nums1, vector<int> &nums2)
+{
+    int result = 0;
+    int n1 = nums1.size();
+    int n2 = nums2.size();
+    // dp[i][j] 表示[0...i-1]的数组A和[0...j-1]的数组B 最长重复子数组的长度
+    vector<vector<int>> dp(n1 + 1, vector<int>(n2 + 1, 0));
+
+    for (int i = 1; i <= n1; i++)
+    {
+        for (int j = 1; j <= n2; j++)
+        {
+            if (nums1[i - 1] == nums2[j - 1])
+            {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            if (result < dp[i][j])
+                result = dp[i][j];
+        }
+    }
+    return result;
+}
+
+/*
+时间：20250724 11:10
+1143. 最长公共子序列
+中等
+给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列。
+*/
+
+int longestCommonSubsequence_dp(string str1, string str2)
+{
+    int result = 0;
+    int len1 = str1.size();
+    int len2 = str2.size();
+
+    // dp[i][j] 表示[0,i-1]的A与[0,j-1]的B的最长公共子序列
+    // if str1[i - 1] == str2[j - 1] ---> dp[i][j] = dp[i - 1][j - 1] + 1;
+    // if str1[i - 1] != str2[j - 1] ---> [0][i-2]A与[0][j-1]B最长公共子序列 或者 [0][i-1]A与[0][j-2]B最长公共子序列 ;
+    
+    vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1, 0));
+    for (int i = 1; i <= len1; i++)
+    {
+        for (int j = 1; j <= len2; j++)
+        {
+            if (str1[i - 1] == str2[j - 1])
+            {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else
+            {
+                dp[i][j] = max(dp[i-1][j],dp[i][j-1]);
+            }
+            result = max(result, dp[i][j]);
+        }
+    }
+
+    return result;
 }

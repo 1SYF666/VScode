@@ -11,11 +11,11 @@
 
 int main()
 {
-    vector<int> prices1 = {3};
-    vector<int> prices2 = {3,3,2};
+    vector<int> prices1 = {1};
+    vector<int> prices2 = {-2,-1};
     // string prices1 = "abcde";
     // string prices2 = "ace";
-    int result = maxUncrossedLines_bf(prices1,prices2);
+    int result = maxsubarray_dp(prices2);
     cout << result << endl;
     return 0;
 }

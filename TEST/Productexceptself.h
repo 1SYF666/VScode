@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <unordered_map>
 using namespace std;
 /*
 时间:20250721 16:45
@@ -278,7 +279,7 @@ int longestCommonSubsequence_dp(string str1, string str2)
     // dp[i][j] 表示[0,i-1]的A与[0,j-1]的B的最长公共子序列
     // if str1[i - 1] == str2[j - 1] ---> dp[i][j] = dp[i - 1][j - 1] + 1;
     // if str1[i - 1] != str2[j - 1] ---> [0][i-2]A与[0][j-1]B最长公共子序列 或者 [0][i-1]A与[0][j-2]B最长公共子序列 ;
-    
+
     vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1, 0));
     for (int i = 1; i <= len1; i++)
     {
@@ -290,11 +291,164 @@ int longestCommonSubsequence_dp(string str1, string str2)
             }
             else
             {
-                dp[i][j] = max(dp[i-1][j],dp[i][j-1]);
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
             }
             result = max(result, dp[i][j]);
         }
     }
 
     return result;
+}
+
+/*
+时间：20250725 10:49
+53. 最大子数组和
+已解答
+中等
+给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+子数组是数组中的一个连续部分。
+*/
+// 通过率203/210
+auto rangsum(int i, int j, vector<int> &pre)
+{
+    return pre[j + 1] - pre[i];
+};
+int maxsubarray_bf(vector<int> &nums)
+{
+    int n = nums.size();
+    // 前缀和
+    vector<int> pre(n + 1, 0);
+    // pre[i] 表示[0,i-1]的前缀和
+    for (int i = 1; i <= n; i++)
+    {
+        pre[i] = nums[i - 1] + pre[i - 1];
+    }
+    int result = INT32_MIN;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i; j < n; j++)
+        {
+            result = max(result, rangsum(i, j, pre));
+        }
+    }
+    return result;
+}
+
+int maxsubarray_dp(vector<int> &nums)
+{
+    int n = nums.size();
+    int result = nums[0];
+    vector<int> dp(n, 0);
+    dp[0] = nums[0];
+    for (int i = 1; i < n; i++)
+    {
+        dp[i] = max(dp[i - 1] + nums[i], nums[i]);
+        result = max(result, dp[i]);
+    }
+    return result;
+}
+
+/*
+时间：20250725 10:49
+392. 判断子序列
+简单
+给定字符串 s 和 t ，判断 s 是否为 t 的子序列。
+字符串的一个子序列是原始字符串删除一些（也可以不删除）字符而不改变剩余字符相对位置形成的新字符串。（例如，"ace"是"abcde"的一个子序列，而"aec"不是）。
+*/
+// 用 s依次对比t
+bool isSubsequence_v1(string s, string t)
+{
+    int n = s.size();
+    int m = t.size();
+    if (n > m)
+        return false;
+    int j = 0;
+    int i = 0;
+    while (j < m)
+    {
+        if (s[i] == t[j])
+            i++;
+        j++;
+    }
+    if (i == n)
+        return true;
+    else
+        return false;
+}
+
+// 进阶：
+// 如果有大量输入的 S，称作 S1, S2, ... , Sk 其中 k >= 10亿，你需要依次检查它们是否为 T 的子序列。
+// 在这种情况下，你会怎样改变代码？找出t中每个字符对应的下标
+static unordered_map<char, vector<int>> preprocess(string t)
+{
+    int n = t.size();
+    unordered_map<char, vector<int>> pos;
+    for (int i = 0; i < n; i++)
+    {
+        pos[t[i]].push_back(i);
+    }
+    return pos;
+}
+// 判断 s 是否为 t 的子序列（传入预处理后的 pos 表）
+bool isSubsequence_v2(string s, string t)
+{
+    int n = t.size(); // t的子序列个数(不含空序列) 2^n-1 2^32 = 4GB
+    unordered_map<char, vector<int>> pos = preprocess(t);
+
+    int curr = -1; // 上一个匹配到的位置
+    for (char ch : s)
+    {
+        // 该字符在t中没有出现，直接返回false
+        if (pos.find(ch) == pos.end())
+        {
+            return false;
+        }
+
+        // 二分查找第一个比curr大的下标
+        const vector<int> &indexlist = pos.at(ch);
+        auto it = upper_bound(indexlist.begin(), indexlist.end(), curr);
+        if (it == indexlist.end())
+            return false;
+        curr = *it;
+    }
+    return true;
+}
+
+/*
+时间：20250725 19:38
+115. 不同的子序列
+困难
+给你两个字符串 s 和 t ，统计并返回在 s 的 子序列 中 t 出现的个数。
+*/
+int numDistinct_dp(string s, string t)
+{
+    int slen = s.size(); // 主
+    int tlen = t.size(); // 子
+
+    // dp[i][j] 表示[0,i-1]的A的子序列中 [0,j-1]的B出现的个数
+    vector<vector<uint32_t>> dp(slen + 1, vector<uint32_t>(tlen + 1, 0));
+
+    // 初始化
+    dp[0][0] = 1; // 空串  空串
+    for (int j = 1; j < tlen; j++)
+        dp[0][j] = 0; // 空串  非空串
+    for (int i = 1; i < slen; i++)
+        dp[i][0] = 1; // 非空串 空串
+
+    // 开始遍历
+    for (int i = 1; i <= slen; i++)
+    {
+        for (int j = 1; j <= tlen; j++)
+        {
+            if (s[i - 1] == t[j - 1])
+            {
+                dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+            }
+            else
+            {
+                dp[i][j] = dp[i - 1][j];
+            }
+        }
+    }
+    return dp[slen][tlen];
 }

@@ -1,4 +1,5 @@
 #include <vector>
+#include <string>
 using namespace std;
 /*
 时间:20250724 15:10
@@ -63,4 +64,49 @@ int maxUncrossedLines_dp(vector<int> &nums1, vector<int> &nums2)
         }
     }
     return dp[n1][n2];
+}
+
+/*
+时间：20250726 11:01
+72. 编辑距离
+中等
+给你两个单词 word1 和 word2， 请返回将 word1 转换成 word2 所使用的最少操作数  。
+你可以对一个单词进行如下三种操作：
+插入一个字符
+删除一个字符
+替换一个字符
+*/
+int minDistance_72dp(string word1, string word2)
+{
+    int n = word1.size();
+    int m = word2.size();
+    // dp[i][j] 表示 [0,i-1]A和转换为[0,j-1]B 所使用的最小操作数
+    vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+    for (int i = 0; i <= n; i++)
+    {
+        dp[i][0] = i; // 删除字符
+    }
+    for (int j = 0; j <= m; j++)
+    {
+        dp[0][j] = j; // 插入字符
+    }
+
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= m; j++)
+        {
+            if (word1[i - 1] == word2[j - 1])
+            {
+                dp[i][j] = dp[i - 1][j - 1];
+            }
+            else
+            {
+                int temp1 = dp[i - 2][j] + 1;     // 插入一个字符
+                int temp2 = dp[i - 1][j] + 1;     // 删除一个字符
+                int temp3 = dp[i-1][j-1] + 1; // 替换一个字符
+                dp[i][j] = min(min(temp1, temp2), temp3);
+            }
+        }
+    }
+    return dp[n][m];
 }

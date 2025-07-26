@@ -103,10 +103,59 @@ int minDistance_72dp(string word1, string word2)
             {
                 int temp1 = dp[i - 2][j] + 1;     // 插入一个字符
                 int temp2 = dp[i - 1][j] + 1;     // 删除一个字符
-                int temp3 = dp[i-1][j-1] + 1; // 替换一个字符
+                int temp3 = dp[i - 1][j - 1] + 1; // 替换一个字符
                 dp[i][j] = min(min(temp1, temp2), temp3);
             }
         }
     }
     return dp[n][m];
+}
+
+/*
+560. 和为 K 的子数组
+中等
+给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的子数组的个数 。
+子数组是数组中元素的连续非空序列。
+*/
+void backtrakingsubarraySum(int index, int k, vector<int> &nums, vector<int> &subarray, vector<vector<int>> &path, int &result)
+{
+    path.push_back(subarray);
+    if (k >= nums.size())
+    {
+        return;
+    }
+
+    for (int i = index; i < nums.size(); i++)
+    {
+        subarray.push_back(nums[i]);
+        backtrakingsubarraySum(i + 1, k, nums, subarray, path, result);
+        subarray.pop_back();
+    }
+}
+
+// 通过率：86 / 93 
+auto rangesum(int i, int j, vector<int> &pre)
+{
+    return pre[j + 1] - pre[i];
+}
+int subarraySum_bf(vector<int> &nums, int k)
+{
+    int n = nums.size();
+    // 前缀和
+    vector<int> pre(n + 1, 0);
+    for (int i = 1; i <= n; i++)
+    {
+        pre[i] = pre[i - 1] + nums[i - 1];
+    }
+    int count = 0;
+    //
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i; j < n; j++)
+        {
+            if (rangesum(i, j, pre) == k)
+                count++;
+        }
+    }
+    return count;
 }

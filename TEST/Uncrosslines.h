@@ -1,5 +1,7 @@
 #include <vector>
+#include <unordered_map>
 #include <string>
+#include <iostream>
 using namespace std;
 /*
 时间:20250724 15:10
@@ -101,9 +103,9 @@ int minDistance_72dp(string word1, string word2)
             }
             else
             {
-                int temp1 = dp[i - 2][j] + 1;     // 插入一个字符
-                int temp2 = dp[i - 1][j] + 1;     // 删除一个字符
-                int temp3 = dp[i - 1][j - 1] + 1; // 替换一个字符
+                int temp1 = dp[i][j - 1] + 1;     // 插入一个字符 -- 相当于 word2增加一个字符a ,然后word1和word2删除a进行比较。
+                int temp2 = dp[i - 1][j] + 1;     // 删除一个字符 
+                int temp3 = dp[i - 1][j - 1] + 1; // 替换一个字符 
                 dp[i][j] = min(min(temp1, temp2), temp3);
             }
         }
@@ -112,28 +114,67 @@ int minDistance_72dp(string word1, string word2)
 }
 
 /*
+时间：20250727 14:39
 560. 和为 K 的子数组
 中等
 给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的子数组的个数 。
 子数组是数组中元素的连续非空序列。
 */
-void backtrakingsubarraySum(int index, int k, vector<int> &nums, vector<int> &subarray, vector<vector<int>> &path, int &result)
-{
-    path.push_back(subarray);
-    if (k >= nums.size())
-    {
-        return;
-    }
+/*
+回溯（DFS）是枚举「可选可不选」的场景（比如子序列、组合、拆分等），需要在每个元素上做“选/不选”分支。
+子数组要求“起点固定后，只能向右连续取”，没有“不选”那条分支，
+所以只要双层 for‐loop，就能一次性把所有连续区间都覆盖到，代码简单效率也更高O(n^2)。
+*/
 
-    for (int i = index; i < nums.size(); i++)
+// 获取数组的子数组 -- 两层for--loop
+vector<vector<int>> getsubarray(vector<int> &nums)
+{
+    vector<int> subarray;
+    vector<vector<int>> path;
+
+    for (int i = 0; i < nums.size(); i++)
     {
-        subarray.push_back(nums[i]);
-        backtrakingsubarraySum(i + 1, k, nums, subarray, path, result);
-        subarray.pop_back();
+        for (int j = i; j < nums.size(); j++)
+        {
+            subarray.push_back(nums[j]);
+            path.push_back(subarray);
+        }
+        subarray.clear();
     }
+    return path;
 }
 
-// 通过率：86 / 93 
+int subarraySum_bfv2(vector<int> &nums, int k)
+{
+    vector<int> subarray;
+    vector<vector<int>> path;
+
+    for (int i = 0; i < nums.size(); i++)
+    {
+        int sum = 0;
+        for (int j = i; j < nums.size(); j++)
+        {
+            sum += nums[j];
+            subarray.push_back(nums[j]);
+            if (sum == k)
+                path.push_back(subarray);
+        }
+        subarray.clear();
+    }
+
+    for (int i = 0; i < path.size(); i++)
+    {
+        cout << "[";
+        for (int j = 0; j < path[i].size(); j++)
+        {
+            cout << path[i][j] << (j + 1 < path[i].size() ? ", " : "");
+        }
+        cout << "]" << endl;
+    }
+    return path.size();
+}
+
+// 通过率：86 / 93
 auto rangesum(int i, int j, vector<int> &pre)
 {
     return pre[j + 1] - pre[i];
@@ -156,6 +197,30 @@ int subarraySum_bf(vector<int> &nums, int k)
             if (rangesum(i, j, pre) == k)
                 count++;
         }
+    }
+    return count;
+}
+
+int subarraySum_optimise(vector<int> &nums, int k)
+{
+    int count = 0;
+    // 前缀和
+    int n = nums.size();
+    vector<int> pre(n + 1, 0);
+    // pre[i] 表示[0,i-1]数组的和
+    for (int i = 1; i <= n; i++)
+    {
+        pre[i] = pre[i - 1] + nums[i - 1];
+    }
+
+    unordered_map<int, int> temp;
+    for (int i = 0; i <= n; i++)
+    {
+        if (temp.count(pre[i] - k))
+        {
+            count += temp[pre[i] - k];
+        }
+        ++temp[pre[i]];
     }
     return count;
 }

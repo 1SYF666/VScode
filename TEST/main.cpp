@@ -13,9 +13,9 @@ int main()
 {
     // vector<int> prices1 = {1};
     // vector<int> prices2 = {1,1,1};
-    string prices1 = "horse";
+    string prices1 = "abc";
     string prices2 = "ros";
-    int result = minDistance_72dp(prices1,prices2);
+    int result = countSubstrings_dp(prices1);
     cout << result << endl;
     return 0;
 }

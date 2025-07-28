@@ -104,8 +104,8 @@ int minDistance_72dp(string word1, string word2)
             else
             {
                 int temp1 = dp[i][j - 1] + 1;     // 插入一个字符 -- 相当于 word2增加一个字符a ,然后word1和word2删除a进行比较。
-                int temp2 = dp[i - 1][j] + 1;     // 删除一个字符 
-                int temp3 = dp[i - 1][j - 1] + 1; // 替换一个字符 
+                int temp2 = dp[i - 1][j] + 1;     // 删除一个字符
+                int temp3 = dp[i - 1][j - 1] + 1; // 替换一个字符
                 dp[i][j] = min(min(temp1, temp2), temp3);
             }
         }
@@ -223,4 +223,81 @@ int subarraySum_optimise(vector<int> &nums, int k)
         ++temp[pre[i]];
     }
     return count;
+}
+
+/*
+647. 回文子串
+中等
+给你一个字符串 s ，请你统计并返回这个字符串中 回文子串 的数目。
+回文字符串 是正着读和倒过来读一样的字符串。
+子字符串 是字符串中的由连续字符组成的一个序列。
+*/
+// 通过率：132/132
+static bool ispalindromic(string s)
+{
+    int n = s.size();
+    int left = 0;
+    int right = n - 1;
+    // AAbAA
+    while (left <= right)
+    {
+        if (s[left] == s[right])
+        {
+            left++;
+            right--;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return true;
+}
+int countSubstrings_bf(string s)
+{
+    int n = s.size();
+    int cnt = 0;
+    string temp;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i; j < n; j++)
+        {
+            temp.push_back(s[j]);
+            if (ispalindromic(temp))
+            {
+                cnt++;
+            }
+        }
+        temp.clear();
+    }
+
+    return cnt;
+}
+
+int countSubstrings_dp(string s)
+{
+    int n = s.size();
+    int result = 0;
+    vector<vector<bool>> dp(n,vector<bool>(n,false));
+    //从下到上，从左到右
+    for(int i = n-1;i>=0;i--)
+    {
+        for(int j = i;j<n;j++)
+        {
+            if(s[i]==s[j])
+            {
+                if(j-i<=1)
+                {
+                    result++;
+                    dp[i][j] = true;
+                }
+                else if(dp[i+1][j-1])
+                {
+                    result++;
+                    dp[i][j] = true;
+                }
+            }
+        }
+    }
+    return result;
 }

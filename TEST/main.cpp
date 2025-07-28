@@ -13,9 +13,9 @@ int main()
 {
     // vector<int> prices1 = {1};
     // vector<int> prices2 = {1,1,1};
-    string prices1 = "abc";
+    string prices1 = "cbbd";
     string prices2 = "ros";
-    int result = countSubstrings_dp(prices1);
+    int result = longestPalindromeSubseq_dp(prices1);
     cout << result << endl;
     return 0;
 }

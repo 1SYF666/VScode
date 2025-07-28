@@ -52,3 +52,28 @@ int distributioncandy_roundtable(vector<int> &nums, int n)
 {
     return 0;
 }
+
+/*
+时间:20250728 16:07
+239. 滑动窗口最大值
+困难
+给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+返回 滑动窗口中的最大值 。
+*/
+// 通过率：38/51
+vector<int> maxSlidingWindow_bf(vector<int> &nums, int k)
+{
+    int n = nums.size();
+    int maxtemp = INT32_MIN;
+    vector<int> result;
+    for (int i = 0; i < n - k + 1; i++)
+    {
+        maxtemp = INT32_MIN;
+        for (int j = i; j < i + k; j++)
+        {
+            maxtemp = max(nums[j],maxtemp);
+        }
+        result.push_back(maxtemp);
+    }
+    return result;
+}

@@ -304,6 +304,30 @@ int countSubstrings_dp(string s)
 
 // 中心扩展法
 
+int countSubstrings_centerexpansion(string s)
+{
+    int cnt = 0;
+    int n = s.size();
+    // 2*n-1 个中心位置
+    // center = 0 2 4 --- 表示奇回文串
+    // center = 1 3 5 --- 表示偶回文串
+    int L = 0; // 左指针
+    int R = 0; // 右指针
+    for (int center = 0; center < 2 * n - 1; center++)
+    {
+        L = center / 2;
+        R = L + center % 2;
+
+        while (L >= 0 && R < n && s[L] == s[R] )
+        {
+            cnt++;
+            L--;
+            R++;
+        }
+    }
+    return cnt;
+}
+
 /*
 时间:20250728
 516. 最长回文子序列
@@ -346,7 +370,7 @@ int longestPalindromeSubseq_dp(string s)
 {
     int n = s.size();
     // dp[i][j] -- [i j]的字符串的最长回文子序列长度 (i <= j)
-    vector<vector<int>> dp(n, vector<int>(n , 0));
+    vector<vector<int>> dp(n, vector<int>(n, 0));
     // dp[i][j] = dp[i+1][j-1]
     for (int i = 0; i < n; i++)
     {
@@ -355,7 +379,7 @@ int longestPalindromeSubseq_dp(string s)
 
     for (int i = n - 1; i >= 0; i--)
     {
-        for (int j = i+1; j < n; j++)
+        for (int j = i + 1; j < n; j++)
         {
             if (s[i] == s[j])
             {
@@ -363,7 +387,7 @@ int longestPalindromeSubseq_dp(string s)
             }
             else
             {
-                dp[i][j] = max(dp[i+1][j],dp[i][j-1]);
+                dp[i][j] = max(dp[i + 1][j], dp[i][j - 1]);
             }
         }
     }

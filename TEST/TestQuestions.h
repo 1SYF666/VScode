@@ -1,4 +1,5 @@
 #include <vector>
+#include <deque>
 using namespace std;
 /*
 时间：20250722 18:31
@@ -71,9 +72,60 @@ vector<int> maxSlidingWindow_bf(vector<int> &nums, int k)
         maxtemp = INT32_MIN;
         for (int j = i; j < i + k; j++)
         {
-            maxtemp = max(nums[j],maxtemp);
+            maxtemp = max(nums[j], maxtemp);
         }
         result.push_back(maxtemp);
+    }
+    return result;
+}
+
+struct MyQueue
+{                   // 实现单调队列（从大到小）
+    deque<int> que; // 使用deque来实现单调队列
+
+    // 每次弹出的时候，比较当前要弹出的数值是否等于队列出口元素的数值，如果相等则弹出
+    void pop(int value)
+    {
+        if (!que.empty() && value == que.front())
+            que.pop_front();
+    }
+    // 如何push的数值大于入口元素的数值，那么就将队列后端的数值弹出
+    // 直到push的数值小于等于队列入口,从队尾push
+    void push(int value)
+    {
+        while (!que.empty() && value > que.back())
+        {
+            que.pop_back();
+        }
+        que.push_back(value);
+    }
+
+    // 查询当前队列里的最大值，直接返回队列前端 也就是front就可以了。
+    int front()
+    {
+        return que.front();
+    }
+};
+
+// 单调队列实现
+vector<int> maxSlidingWindow_deque(vector<int> &nums, int k)
+{
+    MyQueue que;
+
+    vector<int> result;
+
+    for (int i = 0; i < k; i++)
+    { // 先将前k的元素放入队列
+        que.push(nums[i]);
+    }
+
+    result.push_back(que.front()); // 记录前k个元素的最大值
+
+    for (int i = k; i < nums.size(); i++)
+    {
+        que.pop(nums[i-k]);  // 滑动窗口移除最前面元素
+        que.push(nums[i]);  // 滑动窗口前加入最后面的元素
+        result.push_back(que.front());  // 记录对应的最大值
     }
     return result;
 }

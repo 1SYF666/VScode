@@ -1,22 +1,30 @@
 #include <iostream>
-#include "findKthlargest.h"
-#include "Knapsack_Problem2.h"
-#include "Climbstairs.h"
-#include "Majority_elements.h"
-#include "Besttime.h"
-#include "Island.h"
-#include "Productexceptself.h"
-#include "TestQuestions.h"
-#include "Uncrosslines.h"
+#include "Partitions.h"
 
 int main()
 {
-    // vector<int> prices1 = {1, 3, -1, -3, 5, 3, 6, 7};
-    // vector<int> prices2 = {1,1,1};
-    string prices1 = "aaa";
-    // string prices2 = "ros";
-    // vector<int> result = maxSlidingWindow_bf(prices1,3);
-    int result = countSubstrings_centerexpansion(prices1);
-    cout << result << endl;
+
+    int n = 4;
+    vector<vector<string>> result = solveNQueens(n);
+
+    int row = result.size();
+    int col = result[0].size();
+    cout << "[";
+    for (int i = 0; i < row; i++)
+    {
+        cout<<"[";
+        for (int j = 0; j < col; j++)
+        {
+            cout<<"\"";
+            for(int k = 0;k<result[i][j].size();k++)
+            {
+                cout<<result[i][j][k];
+            }
+            cout<<"\""<<((j+1<col)?",":"");
+        }
+        cout<<"]"<<((i+1<row)?"\n":"");
+    }
+    cout << "]";
+
     return 0;
 }

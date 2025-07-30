@@ -1,5 +1,6 @@
 #include <vector>
 #include <deque>
+#include <stdint.h>
 using namespace std;
 /*
 时间：20250722 18:31
@@ -123,9 +124,35 @@ vector<int> maxSlidingWindow_deque(vector<int> &nums, int k)
 
     for (int i = k; i < nums.size(); i++)
     {
-        que.pop(nums[i-k]);  // 滑动窗口移除最前面元素
-        que.push(nums[i]);  // 滑动窗口前加入最后面的元素
-        result.push_back(que.front());  // 记录对应的最大值
+        que.pop(nums[i - k]);          // 滑动窗口移除最前面元素
+        que.push(nums[i]);             // 滑动窗口前加入最后面的元素
+        result.push_back(que.front()); // 记录对应的最大值
+    }
+    return result;
+}
+
+vector<int> maxSlidingWindow_dequeoptimize(vector<int> &nums, int k)
+{
+    vector<int> result;
+    // front(大) ————————  back(小)
+    deque<int> q;
+    int n = nums.size();
+    for (int i = 0; i < n; i++)
+    {
+        // 弹出
+        if (!q.empty() && q.front() == i - k)
+            q.pop_front();
+        
+            // 维护单调递减 且 从队尾 入 队列
+        while (!q.empty() && nums[i] > nums[q.back()])
+        {
+            q.pop_back();
+        }
+        q.push_back(i);
+
+        // 输出
+        if (i >= k - 1)
+            result.push_back(nums[q.front()]);
     }
     return result;
 }

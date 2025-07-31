@@ -169,3 +169,124 @@ vector<vector<string>> solveNQueens(int n)
     solveNQueens_dfs(0, chessboard, result);
     return result;
 }
+
+/*
+时间：20250731 11:05
+27. 移除元素
+已解答
+简单
+给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素。元素的顺序可能发生改变。然后返回 nums 中与 val 不同的元素的数量。
+假设 nums 中不等于 val 的元素数量为 k，要通过此题，您需要执行以下操作：
+更改 nums 数组，使 nums 的前 k 个元素包含不等于 val 的元素。nums 的其余元素和 nums 的大小并不重要。返回 k。
+*/
+int removeElement_bf(vector<int> &nums, int val)
+{
+    int n = nums.size();
+    for (int i = 0; i < n;)
+    {
+        if (nums[i] == val)
+        {
+            // 等于
+            for (int j = i + 1; j < n; j++)
+            {
+                nums[j - 1] = nums[j];
+            }
+            n--;
+        }
+        else
+        {
+            // 不等于
+            i++;
+        }
+    }
+    return n;
+}
+// 双指针。。。
+int removeElement_doublepoint(vector<int> &nums, int val)
+{
+    int slow = 0;
+    int fast = 0;
+    for (fast == 0; fast < nums.size(); fast++)
+    {
+        if (nums[fast] != val)
+        {
+            // 不等于才赋值
+            nums[slow++] = nums[fast];
+        }
+    }
+    return slow;
+}
+
+/*
+977. 有序数组的平方
+给你一个按 非递减顺序 排序的整数数组 nums，返回 每个数字的平方 组成的新数组，要求也按 非递减顺序 排序。
+*/
+vector<int> sortedSquares(vector<int> &nums)
+{
+    int n = nums.size();
+    vector<int> result(n, 0);
+
+    int left = 0;
+    int right = n - 1;
+    while (left <= right)
+    {
+        if (abs(nums[left]) <= abs(nums[right]))
+        {
+            // result.push_back(nums[right] * nums[right]);
+            result[--n] = nums[right] * nums[right];
+            right--;
+        }
+        else
+        {
+            // result.push_back(nums[left] * nums[left]);
+            result[--n] = nums[left] * nums[left];
+            left++;
+        }
+    }
+
+    return result;
+}
+
+/*
+时间:20250731 16:12
+209. 长度最小的子数组
+已解答
+中等
+给定一个含有 n 个正整数的数组和一个正整数 target 。
+找出该数组中满足其总和大于等于 target 的长度最小的 子数组 [numsl, numsl+1, ..., numsr-1, numsr] ，
+并返回其长度。如果不存在符合条件的子数组，返回 0 。
+*/
+// 通过率:18 / 21
+auto rangsum(int i, int j, vector<int> &pre)
+{
+    return pre[j + 1] - pre[i];
+}
+
+int minSubArrayLen_bf(vector<int> &nums, int target)
+{
+    int n = nums.size();
+    int result = INT32_MAX;
+    // 前缀和
+    vector<int> pre(n + 1, 0);
+    for (int i = 0; i < n; i++)
+    {
+        pre[i + 1] = pre[i] + nums[i];
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i; j < n; j++)
+        {
+            if (rangsum(i, j, pre) >= target)
+            {
+                result = (result < (j - i + 1) ? result : (j - i + 1));
+            }
+        }
+    }
+    return result == INT16_MAX ? 0 : result;
+}
+
+int minSubArrayLen_doublepointers(vector<int> &nums, int target)
+{
+    
+}

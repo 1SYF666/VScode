@@ -286,7 +286,29 @@ int minSubArrayLen_bf(vector<int> &nums, int target)
     return result == INT16_MAX ? 0 : result;
 }
 
-int minSubArrayLen_doublepointers(vector<int> &nums, int target)
+int minSubArrayLen_slidewindow(vector<int> &nums, int target)
 {
-    
+    // 窗口状态:大于等于target
+    // [left,right] 大于等于target， [left,right+1]一定大于target
+    // [left,right] 小于target， [left+1,right]一定小于target
+    int n = nums.size();
+    int ans = INT32_MAX;
+    int sum = 0;
+    for (int left = 0, right = 0; right < n; right++)
+    {
+        sum += nums[right];
+        // 满足状态 输出答案
+        while (sum >= target)
+        {
+            ans = (ans < (right - left + 1) ? ans : (right - left + 1));
+            sum -= nums[left];
+            left++;
+        }
+        // 不满足状态
+        //right++;
+    }
+    if (ans == INT32_MAX)
+        return 0;
+    else
+        return ans;
 }

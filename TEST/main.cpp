@@ -1,12 +1,10 @@
 #include <iostream>
 #include "Spiralmatrix.h"
 
-int main()
+void PrintMatrix(vector<vector<int>> &matrix)
 {
-    int val = 1;
-    vector<vector<int>> result = generatematrix(val);
-    int row = result.size();
-    int col = result[0].size();
+    int row = matrix.size();
+    int col = matrix[0].size();
 
     cout << "[";
     for (int i = 0; i < row; i++)
@@ -14,11 +12,27 @@ int main()
         cout << "[";
         for (int j = 0; j < col; j++)
         {
-            cout << result[i][j] << ((j + 1 < col) ? "," : "");
+            cout << matrix[i][j] << ((j + 1 < col) ? "," : "");
         }
-        cout << "]"<<((i + 1 < row) ? "," : "");
+        cout << "]" << ((i + 1 < row) ? "," : "");
     }
     cout << "]";
+}
+void PrintArray(vector<int> &array)
+{
+    int n = array.size();
+    cout<<"[";
+    for(int i =0;i<n;i++)
+    {
+        cout<<array[i]<<((i+1)<n?",":"");
+    }
+    cout<<"]";
+}
 
+int main()
+{
+    vector<int> val = {-1,-100,3,99};
+    vector<int> result = rotate_bf(val,2);
+    PrintArray(result);
     return 0;
 }

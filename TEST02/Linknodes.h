@@ -1,4 +1,193 @@
 
+/*
+时间:20250802 15:21
+160. 相交链表
+简单
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
+图示两个链表在节点 c1 开始相交：
+*/
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode() : val(0), next(nullptr) {};
+    ListNode(int x) : val(x), next(nullptr) {};
+    ListNode(int x, ListNode *next) : val(0), next(next) {};
+};
+
+static ListNode *reverseself(ListNode *head)
+{
+    ListNode *dummy = new ListNode(0);
+    dummy->next = head;
+    ListNode *cur = dummy->next;
+    // 翻转
+    // 1 2 3 4
+    // 4 3 2 1
+    ListNode *pre = dummy->next;
+    ListNode *late = cur->next;
+    while (cur && cur->next)
+    {
+        pre = dummy->next;
+        late = cur->next;
+        cur->next = cur->next->next;
+        dummy->next = late;
+        late->next = pre;
+    }
+    ListNode* headA = dummy->next;
+    delete dummy;
+    dummy = nullptr;
+    cur = nullptr;
+    pre = nullptr;
+    late = nullptr;
+    return headA;
+}
+ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
+{
+    // 翻转链表
+    ListNode *headA1 = reverseself(headA);
+    ListNode *headB1 = reverseself(headB);
+    ListNode *curA = headA1;
+    ListNode *curB = headB1;
+    ListNode *pre = curA;
+
+    int flag = 0;
+    while (curB && curA && curA->val == curB->val)
+    {
+        if (flag == 1)
+            pre = pre->next;
+        flag = 1;
+        curA = curA->next;
+        curB = curB->next;
+    }
+    if (flag == 0)
+        return nullptr;
+    return pre;
+}
+
+/*
+时间:20250802 14:36
+19. 删除链表的倒数第 N 个结点
+已解答
+中等
+提示
+给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+*/
+// struct ListNode
+// {
+//     int val;
+//     ListNode *next;
+//     ListNode() : val(0), next(nullptr) {};
+//     ListNode(int x) : val(x), next(nullptr) {};
+//     ListNode(int x, ListNode *next) : val(x), next(next) {};
+// };
+
+ListNode *removeNthFromEnd(ListNode *head, int n)
+{
+    // 统计节点个数
+    int num = 0;
+    ListNode *dummy = new ListNode(0); // 设置虚拟节点
+    dummy->next = head;
+    ListNode *cur = dummy->next; // 设置游走指针
+    while (cur)
+    {
+        num++;
+        cur = cur->next;
+    }
+    // 删除节点的下标 0 1 2 3 ....
+    int index = num - n;
+    cur = dummy;
+    while (index > 0)
+    {
+        cur = cur->next;
+        index--;
+    }
+    ListNode *tmp = cur->next;
+    cur->next = cur->next->next;
+    delete tmp;
+    tmp = nullptr;
+
+    // 输出
+    head = dummy->next;
+    delete dummy;
+    dummy = nullptr;
+    cur = nullptr;
+
+    return head;
+}
+
+/*
+时间:20250802 13:44
+24. 两两交换链表中的节点
+中等
+给你一个链表，两两交换其中相邻的节点，并返回交换后链表的头节点。你必须在不修改节点内部的值的情况下完成本题（即，只能进行节点交换）。
+*/
+// struct ListNode
+// {
+//     int val;
+//     ListNode *next;
+//     ListNode() : val(0), next(nullptr) {};
+//     ListNode(int x) : val(x), next(nullptr) {};
+//     ListNode(int x, ListNode *next) : val(x), next(next) {};
+// };
+
+ListNode *swapPairs(ListNode *head)
+{
+    ListNode *dummy = new ListNode(0); // 设置虚拟节点
+    dummy->next = head;
+    ListNode *pre = dummy;     // 设置游走指针
+    ListNode *cur = pre->next; // 设置游走指针
+    while (cur && cur->next)
+    {
+        // cur 和 cur->next交换位置
+        // 把 cur->next 放到 cur 的位置
+        ListNode *tmp = cur->next;
+        cur->next = cur->next->next;
+        tmp->next = cur;
+        pre->next = tmp;
+        // 交换完成,下一次交换准备
+        pre = cur;
+        cur = cur->next;
+    }
+
+    head = dummy->next;
+    delete dummy;
+    return head;
+}
+
+/*
+时间:20250802 10:52
+206. 反转链表
+简单
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
+*/
+// struct ListNode
+// {
+//     int val;
+//     ListNode *next;
+//     ListNode() : val(0), next(nullptr) {};
+//     ListNode(int x) : val(x), next(nullptr) {};
+//     ListNode(int x, ListNode *next) : val(0), next(next) {};
+// };
+
+ListNode *reverseList(ListNode *head)
+{
+    ListNode *dummy = new ListNode(0); // 虚拟节点
+    dummy->next = head;
+    ListNode *cur = dummy->next; // 游走节点
+
+    while (cur && cur->next)
+    {
+        ListNode *tmp1 = dummy->next; // dummy后面的节点 ,需要最后的位置
+        ListNode *tmp2 = cur->next;   // 需要移动的位置
+        cur->next = tmp2->next;
+        dummy->next = tmp2;
+        tmp2->next = tmp1;
+    }
+
+    head = dummy->next;
+    delete dummy;
+    return head;
+}
 
 /*
 时间:20250801 19:56
@@ -15,14 +204,14 @@ void addAtTail(int val) 将一个值为 val 的节点追加到链表中作为链
 void addAtIndex(int index, int val) 将一个值为 val 的节点插入到链表中下标为 index 的节点之前。如果 index 等于链表的长度，那么该节点会被追加到链表的末尾。如果 index 比长度更大，该节点将 不会插入 到链表中。
 void deleteAtIndex(int index) 如果下标有效，则删除链表中下标为 index 的节点。
 */
-struct ListNode
-{
-    int val;
-    ListNode *next;
-    ListNode() : val(0), next(nullptr) {};
-    ListNode(int x) : val(x), next(nullptr) {};
-    ListNode(int x, ListNode *next) : val(x), next(next) {};
-};
+// struct ListNode
+// {
+//     int val;
+//     ListNode *next;
+//     ListNode() : val(0), next(nullptr) {};
+//     ListNode(int x) : val(x), next(nullptr) {};
+//     ListNode(int x, ListNode *next) : val(x), next(next) {};
+// };
 
 class MylinkNode
 {
@@ -74,7 +263,7 @@ public:
             cur = cur->next;
         }
         cur->next = tmp;
-        //delete cur;
+        // delete cur;
     }
 
     void addAtIndex(int index, int val)
@@ -94,7 +283,7 @@ public:
             return;
         tmp->next = cur->next;
         cur->next = tmp;
-        //delete cur;
+        // delete cur;
     }
 
     void deleteAtIndex(int index)
@@ -112,7 +301,7 @@ public:
         ListNode *tmp = cur->next;
         cur->next = cur->next->next;
         delete tmp;
-        //delete cur;
+        // delete cur;
     }
 
     ~MylinkNode()

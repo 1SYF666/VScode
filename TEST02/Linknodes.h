@@ -1,10 +1,13 @@
-
+#include <unordered_map>
 /*
-时间:20250802 15:21
-160. 相交链表
+时间:20250802 18:41
+141. 环形链表
 简单
-给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
-图示两个链表在节点 c1 开始相交：
+给你一个链表的头节点 head ，判断链表中是否有环。
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。
+为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。
+注意：pos 不作为参数进行传递 。仅仅是为了标识链表的实际情况。
+如果链表中存在环 ，则返回 true 。 否则，返回 false 。
 */
 struct ListNode
 {
@@ -12,56 +15,167 @@ struct ListNode
     ListNode *next;
     ListNode() : val(0), next(nullptr) {};
     ListNode(int x) : val(x), next(nullptr) {};
-    ListNode(int x, ListNode *next) : val(0), next(next) {};
+    ListNode(int x, ListNode *next) : val(x), next(next) {};
 };
-
-static ListNode *reverseself(ListNode *head)
+bool hasCycle_bf(ListNode *head)
 {
-    ListNode *dummy = new ListNode(0);
-    dummy->next = head;
-    ListNode *cur = dummy->next;
-    // 翻转
-    // 1 2 3 4
-    // 4 3 2 1
-    ListNode *pre = dummy->next;
-    ListNode *late = cur->next;
-    while (cur && cur->next)
+    // 统计节点个数：
+    int num = 0;
+    ListNode *cur = head;
+    if (!cur)
+        return false;
+    while (cur)
     {
-        pre = dummy->next;
-        late = cur->next;
-        cur->next = cur->next->next;
-        dummy->next = late;
-        late->next = pre;
+        num++;
+        cur = cur->next;
+        if (!cur)
+            return false;
+        if (num > 10000)
+            break; // 10000参考 题目节点数范围得出
     }
-    ListNode* headA = dummy->next;
-    delete dummy;
-    dummy = nullptr;
-    cur = nullptr;
-    pre = nullptr;
-    late = nullptr;
-    return headA;
+    return true;
 }
+
+bool hasCycle_hash(ListNode *head)
+{
+    unordered_map<ListNode *, int> mp;
+    ListNode *cur = head; // 游走节点
+    while (cur)
+    {
+        if (mp[cur])
+        {
+            return true;
+        }
+        mp[cur]++;
+        cur = cur->next;
+    }
+    return false;
+}
+
+bool hasCycle_doublepoints(ListNode *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return false;
+    ListNode *slow = head;
+    ListNode *fast = head->next;
+    while (slow != fast)
+    {
+        if (fast == nullptr || fast->next == nullptr)
+            return false;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return true;
+}
+
+/*
+时间:20250803 19:28
+142. 环形链表 II
+中等
+给定一个链表的头节点  head ，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。
+为了表示给定链表中的环，评测系统内部使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。如果 pos 是 -1，则在该链表中没有环。注意：pos 不作为参数进行传递，仅仅是为了标识链表的实际情况。
+不允许修改 链表。
+*/
+ListNode *detectCycle_hash(ListNode *head)
+{
+    unordered_map<ListNode *, int> mp;
+    ListNode *cur = head;
+    while (cur)
+    {
+        if (mp[cur])
+            return cur;
+        mp[cur]++;
+        cur = cur->next;
+    }
+    return nullptr;
+}
+ListNode *detectCycle_doublepoints(ListNode *head)
+{
+    if (!head || !head->next)
+        return nullptr;
+    ListNode *ptr = head;
+    ListNode *slow = head;
+    ListNode *fast = head->next;
+    while (slow != fast)
+    {
+        if (!fast || !fast->next)
+            return nullptr;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    while (ptr != slow)
+    {
+        ptr = ptr->next;
+        slow = slow->next;
+    }
+    return ptr;
+}
+/*
+时间:20250802 15:21
+160. 相交链表
+简单
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 null 。
+图示两个链表在节点 c1 开始相交：
+*/
+// struct ListNode
+// {
+//     int val;
+//     ListNode *next;
+//     ListNode() : val(0), next(nullptr) {};
+//     ListNode(int x) : val(x), next(nullptr) {};
+//     ListNode(int x, ListNode *next) : val(0), next(next) {};
+// };
+
 ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
 {
-    // 翻转链表
-    ListNode *headA1 = reverseself(headA);
-    ListNode *headB1 = reverseself(headB);
-    ListNode *curA = headA1;
-    ListNode *curB = headB1;
-    ListNode *pre = curA;
+    // 统计节点
+    int numA = 0;
+    int numB = 0;
 
-    int flag = 0;
-    while (curB && curA && curA->val == curB->val)
+    ListNode *cur = headA;
+    while (cur)
     {
-        if (flag == 1)
-            pre = pre->next;
-        flag = 1;
-        curA = curA->next;
+        numA++;
+        cur = cur->next;
+    }
+    cur = headB;
+    while (cur)
+    {
+        numB++;
+        cur = cur->next;
+    }
+    //
+    cur = headA;
+    ListNode *curB = headB;
+
+    int intervaln = abs(numA - numB);
+    if (numA > numB)
+    {
+        while (intervaln > 0)
+        {
+            cur = cur->next;
+            intervaln--;
+        }
+    }
+    else
+    {
+        while (intervaln > 0)
+        {
+            curB = curB->next;
+            intervaln--;
+        }
+    }
+
+    while (cur && curB && cur != curB)
+    {
+        cur = cur->next;
         curB = curB->next;
     }
-    if (flag == 0)
+    if (!cur || !curB)
         return nullptr;
-    return pre;
+    return cur;
 }
 
 /*

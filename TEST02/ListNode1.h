@@ -1,4 +1,5 @@
 #include <unordered_map>
+using namespace std;
 /*
 时间:20250802 18:41
 141. 环形链表
@@ -96,13 +97,15 @@ ListNode *detectCycle_doublepoints(ListNode *head)
         return nullptr;
     ListNode *ptr = head;
     ListNode *slow = head;
-    ListNode *fast = head->next;
-    while (slow != fast)
+    ListNode *fast = head;
+    while (1)
     {
         if (!fast || !fast->next)
             return nullptr;
         slow = slow->next;
         fast = fast->next->next;
+        if (slow == fast)
+            break;
     }
 
     while (ptr != slow)

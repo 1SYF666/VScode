@@ -181,6 +181,27 @@ vector<int> rotate_bf(vector<int> &nums, int k)
     }
     return nums;
 }
+static void swapself(vector<int> &nums, int st, int end)
+{
+    int temp = nums.size();
+    while (st <= end)
+    {
+        temp = nums[st];
+        nums[st] = nums[end];
+        nums[end] = temp;
+        st++;
+        end--;
+    }
+}
+vector<int> rotate_bf(vector<int> &nums, int k)
+{
+    int n = nums.size();
+    k = k % n;
+    swapself(nums, 0, n - 1);
+    swapself(nums, 0, k - 1);
+    swapself(nums, k, n - 1);
+    return nums;
+}
 
 /*
 时间:20250801 15:03

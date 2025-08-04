@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
-using namespace std;
-#include "Linknodes.h"
+#include"ListNode1.h"
+using namespace std; 
 
 void acmlinknodes()
 {

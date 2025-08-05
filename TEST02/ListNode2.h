@@ -20,52 +20,28 @@ struct ListNode
 
 ListNode *mergeTwoLists(ListNode *list1, ListNode *list2)
 {
-    // 都为空
-    if (!list1 && !list2)
-        return nullptr;
-    // 一个为空
-    if (!list1 || !list2)
-        return (!list1) ? list2 : list1;
-
-    // 都不为空
-    ListNode *cur1 = list1;
-    ListNode *cur2 = list2;
-    ListNode *head = (cur1->val > cur2->val) ? cur1 : cur2;
-
-    while (cur1 && cur2)
+    // 我想复杂了
+    ListNode *ptr1 = list1;
+    ListNode *ptr2 = list2;
+    ListNode *dummy = new ListNode(0);
+    ListNode *prev = dummy;
+    while (ptr1 && ptr2)
     {
-        // 1 2 4
-        // 1 3 4
-        // cur1 大
-        if (cur1->val >= cur2->val)
+        if (ptr1->val > ptr2->val)
         {
-            if (cur2->next && cur1->val >= cur2->next->val)
-            {
-                cur2 = cur2->next;
-            }
-            else
-            {
-                ListNode *tmp2 = cur2->next;
-                cur2->next = cur1;
-                cur2 = tmp2;
-            }
+            prev->next = ptr2;
+            ptr2 = ptr2->next;
         }
         else
         {
-            // cur1 小
-            if (cur1->next && cur1->next->val >= cur2->val)
-            {
-                ListNode *tmp1 = cur1->next;
-                cur1->next = cur2;
-                cur1 = tmp1;
-            }
-            else
-            {
-                cur1 = cur1->next;
-            }
+            prev->next = ptr1;
+            ptr1 = ptr1->next;
         }
+        prev = prev->next;
     }
-    return head;
+
+    prev->next = ptr1 == nullptr ? ptr2 : ptr1;
+    return dummy->next;
 }
 
 /*
@@ -147,7 +123,7 @@ ListNode *sortList_bf(ListNode *head)
 
     // 对数组排序
     sort(temp.begin(), temp.end());
-    ListNode* dummy = new ListNode(0);
+    ListNode *dummy = new ListNode(0);
     ptr = dummy;
     // 构造链表
     for (int i = 0; i < temp.size(); i++)
@@ -159,10 +135,9 @@ ListNode *sortList_bf(ListNode *head)
     return dummy->next;
 }
 
-
 /*
 时间:20250804 20:31
-146. LRU 缓存
+146. LRU 缓存  -- 巨难
 中等
 请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。
 实现 LRUCache 类：
@@ -172,13 +147,107 @@ void put(int key, int value) 如果关键字 key 已经存在，则变更其数�
 函数 get 和 put 必须以 O(1) 的平均时间复杂度运行。
 */
 
+struct DLinkedNode
+{
+    int key, value;
+    DLinkedNode *prev;
+    DLinkedNode *next;
+    DLinkedNode() : key(0), value(0), prev(nullptr), next(nullptr) {};
+    DLinkedNode(int _key, int _value) : key(_key), value(_value), prev(nullptr), next(nullptr) {};
+};
 
+class LRUCache
+{
+private:
+    unordered_map<int, DLinkedNode *> cache;
+    DLinkedNode *head;
+    DLinkedNode *tail;
+    int size;
+    int capacity;
 
+public:
+    LRUCache(int _capacity) : capacity(_capacity), size(0)
+    {
+        // 使用伪头部和伪尾部节点
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+        head->next = tail;
+        tail->prev = head;
+    }
 
+    int get(int key)
+    {
+        if (!cache.count(key))
+        {
+            return -1;
+        }
+        // 如果 key 存在，先通过哈希表定位，再移到头部
+        DLinkedNode *node = cache[key];
+        moveToHead(node);
+        return node->value;
+    }
 
+    void put(int key, int value)
+    {
+        if (!cache.count(key))
+        {
+            // 如果不存在
+            DLinkedNode *node = new DLinkedNode(key, value);
+            // 添加进哈希表
+            cache[key] = node;
+            // 添加至双向链表的头部
+            addToHead(node);
+            ++size;
 
+            if (size > capacity)
+            {
+                // 如果超出容量，删除双向链表的尾部节点
+                DLinkedNode *remove = removeTail();
 
+                // 删除哈希表中对应的项
+                cache.erase(remove->key);
 
+                // 防止内存泄露
+                delete remove;
+                --size;
+            }
+        }
+        else
+        {
+            // 如何key 存在，先通过哈希表定位，再修改 value，并移到头部
+            DLinkedNode *node = cache[key];
+            node->value = value;
+            moveToHead(node);
+        }
+    }
+
+    void addToHead(DLinkedNode *node)
+    {
+        node->prev = head;
+        node->next = head->next;
+        head->next->prev = node;
+        head->next = node;
+    }
+
+    void removeNode(DLinkedNode *node)
+    {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+
+    void moveToHead(DLinkedNode *node)
+    {
+        removeNode(node);
+
+        addToHead(node);
+    }
+    DLinkedNode *removeTail()
+    {
+        DLinkedNode *node = tail->prev;
+        removeNode(node);
+        return node;
+    }
+};
 
 /*
 时间:20250804 16:07

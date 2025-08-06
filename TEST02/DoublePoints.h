@@ -5,6 +5,136 @@
 using namespace std;
 
 /*
+42. 接雨水
+困难
+给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+*/
+int trap_bf(vector<int> &height)
+{
+    int n = height.size();
+    int sum = 0;
+    if (n <= 2)
+        return 0;
+    vector<int> premax(n, 0); // 前缀最大值数组
+    // premax[i] 表示 [0,i-1]对应的最大值
+    for (int i = 1; i < n; i++)
+    {
+        premax[i] = max(premax[i - 1], height[i - 1]);
+    }
+    vector<int> latemax(n, 0); // 前缀最大值数组
+    // latemax[i] 表示 [i-1,n-1]对应的最大值
+    for (int i = n - 2; i >= 0; i--)
+    {
+        latemax[i] = max(latemax[i + 1], height[i + 1]);
+    }
+    // 遍历数组  -- 转化为单个柱子的接水量
+    for (int i = 0; i < n; i++)
+    {
+        if (premax[i] > height[i] && height[i] < latemax[i])
+        {
+            sum += min(latemax[i], premax[i]) - height[i];
+        }
+    }
+    return sum;
+}
+
+/*
+时间:20250806 19:00
+16. 最接近的三数之和
+中等
+给你一个长度为 n 的整数数组 nums 和 一个目标值 target。请你从 nums 中选出三个整数，使它们的和与 target 最接近。
+返回这三个数的和。
+假定每组输入只存在恰好一个解。
+*/
+int threeSumClosest(vector<int> &nums, int target)
+{
+    int n = nums.size();
+    sort(nums.begin(), nums.end());
+    int result = 0;
+    int temp = INT32_MAX;
+    for (int i = 0; i < n;)
+    {
+        if (nums[i] > target && nums[i] >= 0 && i < n - 2)
+        {
+            int sum = nums[i] + nums[i + 1] + nums[i + 2];
+            if (temp > abs(sum - target))
+            {
+                result = sum;
+            }
+            break;
+        }
+        int twotarget = target - nums[i];
+
+        int left = i + 1;
+        int right = n - 1;
+        while (left < right)
+        {
+            int twosum = nums[left] + nums[right];
+            if (temp > abs(twosum - twotarget))
+            {
+                temp = abs(twosum - twotarget);
+                result = twosum + nums[i];
+            }
+            if (twosum > twotarget)
+            {
+                right--;
+            }
+            else if (twosum < twotarget)
+            {
+                left++;
+            }
+            else
+            {
+
+                // 去重
+                int second = nums[left];
+                int third = nums[right];
+                while (left < right && nums[left] == second)
+                {
+                    left++;
+                }
+                while (left < right && nums[right] == third)
+                {
+                    right--;
+                }
+            }
+        }
+        //
+        int first = nums[i];
+        while (i < n && nums[i] == first)
+        {
+            i++;
+        }
+    }
+    return result;
+}
+
+int threeSumClosest_bf(vector<int> &nums, int target)
+{
+    int n = nums.size();
+    int sum = 0;
+    int temp = INT32_MAX;
+    int result = 0;
+    for (int i = 0; i < n - 2; i++)
+    {
+        for (int j = i + 1; j < n - 1; j++)
+        {
+            for (int k = j + 1; k < n; k++)
+            {
+                sum = nums[i] + nums[j] + nums[k];
+                // 选择最小的
+                if (temp > abs(sum - target))
+                {
+                    temp = abs(sum - target);
+                    result = sum;
+                }
+            }
+        }
+    }
+    return result;
+}
+
+/*
 时间:20250806 16:18
 18. 四数之和
 已解答
@@ -31,7 +161,7 @@ vector<vector<int>> fourSum(vector<int> &nums, int target)
         {
             if (nums[j] > target3 && nums[j] >= 0)
             {
-                break;  // pay attention
+                break; // pay attention
             }
 
             int left = j + 1;

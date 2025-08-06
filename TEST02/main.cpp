@@ -6,9 +6,8 @@ using namespace std;
 
 int main()
 {
-    vector<int> nums = {1,8,6,2,5,4,8,3,7};
-    int result = maxArea(nums);
-    cout << result;
+    
+    return 0;
 }
 
 void acmlinknodes()

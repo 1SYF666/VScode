@@ -1,5 +1,6 @@
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 using namespace std;
 
@@ -83,4 +84,95 @@ vector<int> twoSum(vector<int> &nums, int target)
         mp[nums[i]] = i;
     }
     return {};
+}
+
+/*
+时间:20250806 10:05
+49. 字母异位词分组
+已解答
+中等
+给你一个字符串数组，请你将 字母异位词 组合在一起。可以按任意顺序返回结果列表。
+*/
+
+static bool isAnagramself(string s, string t)
+{
+    if (s.size() != t.size())
+        return false;
+    unordered_map<char, int> mp;
+    for (int i = 0; i < s.size(); i++)
+    {
+        mp[s[i]]++;
+    }
+    for (int i = 0; i < t.size(); i++)
+    {
+        if (mp[t[i]] == 0)
+        {
+            return false;
+        }
+        mp[t[i]]--;
+    }
+    return true;
+}
+// 超出时间限制
+vector<vector<string>> groupAnagrams_bf(vector<string> &strs)
+{
+    vector<vector<string>> result;
+    for (auto s : strs)
+    {
+        int i = 0;
+        for (i = 0; i < result.size(); i++)
+        {
+            if (isAnagramself(s, result[i][0]))
+            {
+                // 存在 添加
+                result[i].push_back(s);
+                break;
+            }
+        }
+        if (i == result.size())
+        {
+            result.push_back({s});
+        }
+    }
+    return result;
+}
+
+/*
+128. 最长连续序列
+已解答
+中等
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+请你设计并实现时间复杂度为 O(n) 的算法解决此问题。
+*/
+
+int longestConsecutive(vector<int> &nums)
+{
+    unordered_set<int> hash;
+    for (auto num : nums)
+    {
+        hash.insert(num);
+    }
+    int maxlen = 0;
+    for (auto x : hash)
+    {
+        /*是否是开始值*/
+        if (hash.count(x - 1) == 0)
+        {
+            // 是
+            int currentnum = x;
+            int currentlen = 1;
+            while (hash.count(currentnum + 1))
+            {
+                currentnum++;
+                currentlen++;
+            }
+            maxlen = maxlen > currentlen ? maxlen : currentlen;
+        }
+        // else
+        // {
+        //     // 不是
+            
+        // }
+    }
+    return maxlen;
 }

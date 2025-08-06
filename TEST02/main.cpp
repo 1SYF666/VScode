@@ -1,7 +1,15 @@
 #include <iostream>
 #include <vector>
-#include"ListNode1.h"
-using namespace std; 
+#include "ListNode1.h"
+#include "DoublePoints.h"
+using namespace std;
+
+int main()
+{
+    vector<int> nums = {1,8,6,2,5,4,8,3,7};
+    int result = maxArea(nums);
+    cout << result;
+}
 
 void acmlinknodes()
 {
@@ -60,66 +68,4 @@ void acmlinknodes()
         delete tmp;
     }
     return;
-}
-
-int main()
-{
-    // 第一行节点个数
-    // 第二行各节点值
-    // 第三行返回各节点值
-    // 1
-    int n; // 节点数
-    if (!(cin >> n))
-        return 0;
-    // 2
-    vector<int> a(n, 1);
-    for (int i = 0; i < n; i++)
-    {
-        cin >> a[i];
-    }
-
-    // 构建链表
-    ListNode *dummy = new ListNode(0); // 虚拟节点
-    ListNode *cur = dummy;             //  游走指针
-    int i = 0;
-    while (i < n)
-    {
-        //
-        ListNode *node = new ListNode(a[i]);
-        cur->next = node;
-        // 增加完成
-        cur = cur->next;
-        i++;
-    }
-    ListNode *head = dummy->next;
-    delete dummy;
-    dummy = nullptr;
-    // 调用函数
-    ListNode *newHead = removeNthFromEnd(head,1);
-
-    // 打印
-    cur = newHead;
-    cout << "[";
-    bool fast = true;
-    while (cur)
-    {
-        if (!fast)
-            cout << ",";
-        cout << cur->val;
-        // 处理完
-        cur = cur->next;
-        fast = false;
-    }
-    cout << "]";
-
-    // 释放内存
-    while (newHead)
-    {
-        ListNode *tmp = newHead;
-        newHead = newHead->next;
-        delete tmp;
-        tmp = nullptr;
-    }
-    cur =nullptr;
-    return 0;
 }

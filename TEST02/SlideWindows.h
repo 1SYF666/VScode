@@ -12,12 +12,12 @@ vector<int> maxslidewindows(vector<int> &nums, int k)
     deque<int> q;
     for (int i = 0; i < nums.size(); i++)
     {
-        // 出--因为窗口长度就是k 
-        while (q.size()&&q.front()==i-k)
+        // 出--因为窗口长度就是k
+        while (q.size() && q.front() == i - k)
         {
             q.pop_front();
         }
-        
+
         // 从队尾入
         while (q.size() && nums[i] > nums[q.back()])
         {
@@ -203,7 +203,7 @@ struct DListNode
     DListNode *prev;
     DListNode *next;
     DListNode() : key(0), value(0), prev(nullptr), next(nullptr) {};
-    DListNode(int _key, int _value) : key(-_key), value(_value), prev(nullptr), next(nullptr) {};
+    DListNode(int _key, int _value) : key(_key), value(_value), prev(nullptr), next(nullptr) {};
 };
 
 class LRUCache
@@ -214,5 +214,93 @@ private:
     DListNode *tail;
     int size;
     int capacity;
-    
+
+public:
+    LRUCache(int _capacity) : capacity(_capacity), size(0)
+    {
+        // 使用虚头部和虚尾部
+        head = new DListNode();
+        tail = new DListNode();
+        head->next = tail;
+        tail->prev = head;
+    }
+    int get(int key)
+    {
+        // 不存在
+        if (!cache.count(key))
+        {
+            return -1;
+        }
+        // 存在
+        DListNode *node = cache[key];
+        moveTohead(node);
+        return node->value;
+    }
+
+    void put(int key, int value)
+    {
+        // 存在
+        if (!cache.count(key))
+        {
+            // 不存在
+            // 插入
+            DListNode *node = new DListNode(key, value);
+            cache[key] = node;
+            size++;
+            // 添加至双向链表的头部
+            addTohead(node);
+            if (size > capacity)
+            {
+                // 判断是否 超容
+                DListNode *remove = removeTail();
+                // 是 删除尾部
+                cache.erase(remove->key);
+                delete (remove);
+                --size;
+                // 否  不管
+            }
+        }
+        else
+        {
+            // 存在
+            DListNode *node = cache[key];
+            node->value = value;
+            moveTohead(node);
+        }
+    }
+
+    void moveTohead(DListNode *node)
+    {
+        // 从原始链表中移除掉  -- 保持链表节点节点之间稳定
+        removeNode(node);
+        // 把 该节点 放到头部
+        addTohead(node);
+    }
+
+    void removeNode(DListNode *node)
+    {
+        // A-->B-->c
+        // A<--B<--C
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+
+    void addTohead(DListNode *node)
+    {
+        // head --> A
+        // head <-- A
+        node->next = head->next;
+        head->next = node;
+        node->next->prev = node;
+        node->prev = head;
+    }
+    DListNode *removeTail()
+    {
+        // A-->tail
+        // A<--tail
+        DListNode *A = tail->prev;
+        tail->prev->prev->next = tail;
+        tail->prev = A->prev;
+        return A;
+    }
 };

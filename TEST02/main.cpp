@@ -1,15 +1,16 @@
 #include <iostream>
 #include <vector>
 #include "ListNode1.h"
-#include "DoublePoints.h"
-#include "SlideWindows.h"
+#include "StackQue.h"
+#include "StackQue2.h"
 using namespace std;
 
 int main()
 {
-    string s = "pwwkew";
-    int result = lengthOfLongestSubstring(s);
-    cout << result << endl;
+    vector<string> s = {"10","6","9","3","+","-11","*","/","*","17","+","5","+"};
+    int result = evalRPN(s);
+
+    cout << result;
     return 0;
 }
 

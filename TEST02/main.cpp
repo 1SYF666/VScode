@@ -7,8 +7,8 @@ using namespace std;
 
 int main()
 {
-    vector<string> s = {"10","6","9","3","+","-11","*","/","*","17","+","5","+"};
-    int result = evalRPN(s);
+    vector<int> s = {2,1,5,6,2,3};
+    int result = largestRectangleArea(s);
 
     cout << result;
     return 0;

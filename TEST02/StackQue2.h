@@ -14,7 +14,34 @@ premium lock icon
 给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
 求在该柱状图中，能够勾勒出来的矩形的最大面积。
 */
-// 90 / 99 
+// 单调栈  ---  找 两个边界
+int largestRectangleArea(vector<int> &heights)
+{
+    int n = heights.size();
+    stack<int> st; // 存放下标
+    // [0 height 0]
+    vector<int> vec(n + 2, 0);
+    for (int i = 0; i < n; i++)
+    {
+        vec[i + 1] = heights[i];
+    }
+    int area = 0;
+    for (int i = 0; i < vec.size(); i++)
+    {
+        // 1 2 1
+        while (!st.empty() && vec[i] < vec[st.top()])
+        {
+            int h = vec[st.top()];
+            st.pop();
+            int w = i - st.top() - 1;
+            area = max(area, h * w);
+        }
+        st.push(i);
+    }
+    return area;
+}
+
+// 90 / 99
 int largestRectangleArea_bf(vector<int> &heights)
 {
     int n = heights.size();

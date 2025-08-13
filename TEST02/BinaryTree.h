@@ -1,5 +1,6 @@
 #include <stack>
 #include <vector>
+#include <string>
 #include <queue>
 #include <algorithm>
 using namespace std;
@@ -10,9 +11,89 @@ struct TreeNode
     TreeNode *left;
     TreeNode *right;
     TreeNode() : val(0), left(nullptr), right(nullptr) {}
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int _val) : val(_val), left(nullptr), right(nullptr) {}
     TreeNode(int _val, TreeNode *_left, TreeNode *_right) : val(_val), left(_left), right(_right) {}
 };
+
+/*
+时间:20250813 15:35
+257. 二叉树的所有路径
+已解答
+简单
+给你一个二叉树的根节点 root ，按 任意顺序 ，返回所有从根节点到叶子节点的路径。
+叶子节点 是指没有子节点的节点。
+*/
+void dfs(TreeNode *root, string &res, vector<string> &result)
+{
+    if (root == nullptr)
+    {
+        return;
+    }
+    if (res.size())
+    {
+        res += "->";
+        res += to_string(root->val);
+    }
+    else
+    {
+        res += to_string(root->val);
+    }
+    if (!root->left && !root->right)
+    {
+        result.push_back(res);
+        return;
+    }
+    if (root->left)
+        dfs(root->left, res, result);
+    if (root->right)
+        dfs(root->right, res, result);
+}
+vector<string> binaryTreePaths(TreeNode *root)
+{
+    string res;
+    vector<string> result;
+    if (root == nullptr)
+        return result;
+    dfs(root, res, result);
+    return result;
+}
+
+/*
+时间:20250813 10:28
+226. 翻转二叉树
+已解答
+简单
+给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。
+*/
+// 相当于前序遍历
+TreeNode *invertTree(TreeNode *root)
+{
+
+    if (root == nullptr)
+        return root;
+    if (!root->left && !root->right)
+        return root;
+    if (root->left || root->right)
+    {
+        TreeNode *node = root->left;
+        root->left = root->right;
+        root->right = node;
+    }
+    invertTree(root->left);
+    invertTree(root->right);
+
+    return root;
+}
+
+// struct TreeNode
+// {
+//     int val;
+//     TreeNode *left;
+//     TreeNode *right;
+//     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+//     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+//     TreeNode(int _val, TreeNode *_left, TreeNode *_right) : val(_val), left(_left), right(_right) {}
+// };
 
 /*
 时间:20250812 15:26

@@ -10,24 +10,8 @@ using namespace std;
 
 int main()
 {
-    int n = 1;
-    vector<vector<string>> ans = Nqueen(n);
-    cout << "[";
-    for (int i = 0; i < ans.size(); i++)
-    {
-        cout << "[";
-        for (int j = 0; j < ans[i].size(); j++)
-        {
-            cout << "\"";
-            for (int k = 0; k < ans[i][j].size(); k++)
-            {
-                cout << ans[i][j][k];
-            }
-            cout << "\"" << ((j + 1 < ans[i].size()) ? "," : "");
-        }
-        cout << "]" << ((i + 1 < ans.size()) ? "," : "");
-    }
-    cout << "]" << endl;
+    string s = "101023";
+    IPaddress(s);
     return 0;
 }
 

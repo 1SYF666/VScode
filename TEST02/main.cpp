@@ -5,17 +5,31 @@
 #include "StackQue.h"
 #include "StackQue2.h"
 #include "Graph.h"
+#include "BackTrack.h"
 using namespace std;
 
-int main1()
+int main()
 {
-
-    
+    int n = 1;
+    vector<vector<string>> ans = Nqueen(n);
+    cout << "[";
+    for (int i = 0; i < ans.size(); i++)
+    {
+        cout << "[";
+        for (int j = 0; j < ans[i].size(); j++)
+        {
+            cout << "\"";
+            for (int k = 0; k < ans[i][j].size(); k++)
+            {
+                cout << ans[i][j][k];
+            }
+            cout << "\"" << ((j + 1 < ans[i].size()) ? "," : "");
+        }
+        cout << "]" << ((i + 1 < ans.size()) ? "," : "");
+    }
+    cout << "]" << endl;
     return 0;
 }
-
-
-
 
 void graphacm_adjacentlist()
 {
@@ -51,7 +65,7 @@ void graphacm_adjacentlist()
         }
         cout << endl;
     }
-    return ;
+    return;
 }
 
 void Graphacm_adjacencymatrix()
@@ -73,7 +87,7 @@ void Graphacm_adjacencymatrix()
     vector<int> path;           // 1节点到终点的路径
     vector<vector<int>> result; // 收集符合条件的路径
 
-    path.push_back(1);              // 无论什么路径已经是从0节点出发
+    path.push_back(1);                              // 无论什么路径已经是从0节点出发
     dfs_adjacent_matrix(graph, 1, n, path, result); // 开始遍历
 
     // 输出结果

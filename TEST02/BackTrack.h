@@ -218,3 +218,74 @@ bool searchnum(vector<vector<int>> &matrix, int target)
     }
     return false;
 }
+
+/*
+时间:20250902 11:27
+93. 复原 IP 地址
+中等
+有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+例如："0.1.2.201" 和 "192.168.1.1" 是 有效 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效 IP 地址。
+给定一个只包含数字的字符串 s ，用以表示一个 IP 地址，返回所有可能的有效 IP 地址，这些地址可以通过在 s 中插入 '.' 来形成。
+你不能重新排序或删除 s 中的任何数字。你可以按 任何 顺序返回答案。
+*/
+void IPaddressDFS1(string s, int index, int count, string &path,
+                   vector<string> &ans)
+{
+    //
+    if (count > 4)
+        return;
+    if (index == s.size() && count == 4)
+    {
+
+        ans.push_back(path.substr(0, path.size() - 1));
+        return;
+    }
+
+    //
+    for (int i = index; i < s.size(); i++)
+    {
+        string stemp = s.substr(index, i - index + 1);
+        long long nums = stoll(stemp);
+        if ((nums > 0 && nums <= 255 && stemp[0] != '0') ||
+            (nums == 0 && stemp.size() == 1))
+        {
+            path += stemp;
+            path += ".";
+            IPaddressDFS1(s, i + 1, count + 1, path, ans);
+            for (int k = 0; k <= stemp.size(); k++)
+                path.pop_back();
+        }
+    }
+}
+vector<string> IPaddress0902(string s)
+{
+    string path;
+    vector<string> ans;
+    if (s.size() > 3 && s.size() <= 12)
+        IPaddressDFS1(s, 0, 0, path, ans);
+    return ans;
+}
+
+// 下标索引对应位置
+void indexfind()
+{
+    vector<int> nums = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    vector<int> left(nums.begin() + 0, nums.begin() + 5); // 获得 a[0]---a[4]
+    // a[0] = nums.begin()+0;
+    // a[5] = nums.begin()+5;
+    // a[0] = nums.begin()+0;
+
+    for (int i = 0; i < left.size(); i++)
+    {
+        cout << left[i] << " ";
+    }
+
+    // vector<int>right(nums.begin()+6,nums.end());
+    vector<int> right(nums.begin() + 6, nums.begin() + 9);
+    cout << endl;
+    for (int i = 0; i < right.size(); i++)
+    {
+        cout << right[i] << " ";
+    }
+    return;
+}

@@ -10,12 +10,11 @@ using namespace std;
 
 int main()
 {
-    string s = "101023";
-    IPaddress(s);
+    
     return 0;
 }
-
-void graphacm_adjacentlist()
+ 
+void graphacm_adjacentlist() 
 {
     int n, m, s, t;
     cin >> n >> m;

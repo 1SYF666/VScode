@@ -488,3 +488,139 @@ vector<vector<int>> leetcode73(vector<vector<int>> &matrix)
         }
     }
 }
+
+vector<int> leetcode54(vector<vector<int>> &matrix)
+{
+    vector<int> ans;
+    int m = matrix.size();
+    int n = matrix[0].size();
+
+    int up = 0;
+    int right = n - 1;
+    int left = 0;
+    int down = m - 1;
+
+    while (1)
+    {
+        for (int j = left; j <= right; j++)
+        {
+            ans.push_back(matrix[up][j]);
+        }
+        up++;
+        if (up > down)
+            break;
+        for (int i = up; i <= down; i++)
+        {
+            ans.push_back(matrix[i][right]);
+        }
+        right--;
+        if (right < left)
+            break;
+
+        for (int j = right; j >= left; j--)
+        {
+            ans.push_back(matrix[down][j]);
+        }
+        down--;
+
+        if (down < up)
+            break;
+
+        for (int i = down; i >= up; i--)
+        {
+            ans.push_back(matrix[i][left]);
+        }
+        left++;
+        if (left > right)
+            break;
+    }
+    return ans;
+}
+
+void leetcode48(vector<vector<int>> &matrix)
+{
+    int n = matrix.size();
+    // a[0][1]   a[1][3]
+    // old: (row,col)
+    // new: (col,n-row-1)
+    //  a[col][n-row-1] = a[row][col]
+    //  a[x][y] = a[n-y-1][x]
+
+    /*
+        loop = n/2;
+        n = 3:
+            i = 0:
+                j = 0 1
+        n = 4:
+            i = 0:
+                j = 0 1 2
+            i = 1:
+                j = 1
+        n = 5:
+            i = 0:
+                j = 0 1 2 3
+            i = 1:
+                j = 1 2
+            i = 2:
+                j = 2
+    */
+    for (int row = 0; row < n / 2; row++)
+    {
+        for (int col = row; col <= n - row - 2; col++)
+        {
+            int temp = matrix[row][col];
+            matrix[row][col] = matrix[n - col - 1][row];
+            matrix[n - col - 1][row] = matrix[n - row - 1][n - col - 1];
+            matrix[n - row - 1][n - col - 1] = matrix[col][n - row - 1];
+            matrix[col][n - row - 1] = temp;
+        }
+    }
+    return;
+}
+
+bool leetcode240(vector<vector<int>> &matrix, int target)
+{
+    int m = matrix.size();
+    int n = matrix[0].size();
+    int row = 0;
+    int col = n - 1;
+    while (row < m && col >= 0)
+    {
+        if (matrix[row][col] < target)
+        {
+            row++;
+        }
+        else if (matrix[row][col] > target)
+        {
+            col--;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    return false;
+}
+//
+bool leetcode74(vector<vector<int>> &matrix, int target)
+{
+    int m = matrix.size();
+    int n = matrix[0].size();
+
+    if (target < matrix[0][0] || target > matrix[m - 1][n - 1])
+    {
+        return false;
+    }
+    int row = 0;
+    while (row < m && matrix[row][0] <= target)
+    {
+        row++;
+    }
+    for (int j = 0; j < n; j++)
+    {
+        if (matrix[row - 1][j] == target)
+            return true;
+    }
+
+    return false;
+}

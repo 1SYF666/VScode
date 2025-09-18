@@ -80,7 +80,7 @@ int leetcode128(vector<int> &nums)
 }
 
 //
-vector<int> leetcode283(vector<int> &nums)
+void leetcode283(vector<int> &nums)
 {
     int slow = 0;
     int fast = 0;
@@ -623,4 +623,184 @@ bool leetcode74(vector<vector<int>> &matrix, int target)
     }
 
     return false;
+}
+
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode(int _val) : val(_val), next(nullptr) {}
+};
+
+ListNode *creatList(vector<int> &nums)
+{
+    int n = nums.size();
+    ListNode *dummy = new ListNode(0);
+    ListNode *cur = dummy;
+    for (auto x : nums)
+    {
+        cur->next = new ListNode(x);
+        cur = cur->next;
+    }
+
+    ListNode *head = dummy->next;
+    delete dummy;
+    dummy = nullptr;
+    return head;
+}
+
+ListNode *leetcode160(ListNode *headA, ListNode *headB)
+{
+    int Alen = 0;
+    ListNode *cur = headA;
+    while (cur != nullptr)
+    {
+        Alen++;
+        cur = cur->next;
+    }
+
+    int Blen = 0;
+    cur = headB;
+    while (cur != nullptr)
+    {
+        Blen++;
+        cur = cur->next;
+    }
+    // A 长 B 短
+    //
+    if (Blen > Alen)
+    {
+        swap(headA, headB);
+        swap(Blen, Alen);
+    }
+
+    //
+    int len = Alen - Blen;
+    cur = headA;
+    while (len--)
+    {
+        cur = cur->next;
+    }
+    ListNode *curb = headB;
+    while (cur && curb)
+    {
+        if (cur == curb)
+            return cur;
+        cur = cur->next;
+        curb = curb->next;
+    }
+    return nullptr;
+}
+
+ListNode *leetcode206(ListNode *head)
+{
+    ListNode *pre = nullptr;
+    ListNode *cur = head;
+    while (cur)
+    {
+        ListNode *tmp = cur->next;
+        cur->next = pre;
+        pre = cur;
+        cur = tmp;
+    }
+    return pre;
+}
+
+bool leetcode141(ListNode *head)
+{
+    if (head == nullptr)
+        return false;
+    if (head->next == nullptr)
+        return false;
+    ListNode *fast = head;
+    ListNode *slow = head;
+
+    while (fast && fast->next)
+    {
+        fast = fast->next->next;
+        slow = slow->next;
+        if (slow == fast)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+ListNode *leetcode142(ListNode *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return nullptr;
+    ListNode *slow = head;
+    ListNode *ptr = head;
+    ListNode *fast = head;
+    while (fast && fast->next)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+        if (slow == fast)
+        {
+            break;
+        }
+    }
+    // 没有环
+    if (!fast || !fast->next)
+        return nullptr;
+
+    while (ptr != slow)
+    {
+        ptr = ptr->next;
+        slow = slow->next;
+    }
+    return ptr;
+}
+
+ListNode *leetcode21(ListNode *list1, ListNode *list2)
+{
+    ListNode *dummy = new ListNode(0);
+    ListNode *cur = dummy;
+
+    while (list1 && list2)
+    {
+        if (list1->val < list2->val)
+        {
+            cur->next = list1;
+            list1 = list1->next;
+        }
+        else
+        {
+            cur->next = list2;
+            list2 = list2->next;
+        }
+        cur = cur->next;
+    }
+    cur->next = (list1 == nullptr) ? list2 : list1;
+    return dummy->next;
+}
+
+ListNode *leetcode2(ListNode *l1, ListNode *l2)
+{
+    ListNode *dummy = new ListNode(0);
+    ListNode *cur = dummy;
+    int carry = 0;
+
+    while (l1 || l2)
+    {
+        int val1 = (l1 != nullptr) ? l1->val : 0;
+        int val2 = (l2 != nullptr) ? l2->val : 0;
+        int sum = val1 + val2 + carry;
+        cur->next = new ListNode(sum % 10);
+        cur = cur->next;
+        if (l1)
+            l1 = l1->next;
+        if (l2)
+            l2 = l2->next;
+        carry = sum / 10;
+    }
+    if (carry != 0)
+    {
+        cur->next = new ListNode(carry);
+    }
+
+    return dummy->next;
 }
